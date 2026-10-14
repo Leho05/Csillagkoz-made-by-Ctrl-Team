@@ -4,7 +4,7 @@ import org.csillagkoz.model.Flight;
 import java.time.LocalDateTime;
 
 /**
- * Üzleti logika és számítások
+ * Üzleti logika
  */
 public class BookingService {
 
