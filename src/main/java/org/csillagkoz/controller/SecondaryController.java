@@ -1,7 +1,9 @@
-package org.csillagkoz;
+package org.csillagkoz.controller;
+
+import javafx.fxml.FXML;
+import org.csillagkoz.App;
 
 import java.io.IOException;
-import javafx.fxml.FXML;
 
 public class SecondaryController {
 
