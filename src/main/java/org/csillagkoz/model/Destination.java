@@ -7,12 +7,22 @@ public class Destination {
     private String name;
     private String type;       // "PLANET" vagy "MOON"
     private int basePrice;
+    private int kedvezmenyesPrice;
 
     // Konstruktor (ezzel hozzuk létre az új célállomásokat)
-    public Destination(String name, String type, int basePrice) {
+    public Destination(String name, String type, int basePrice, int kedvezmenyesPrice) {
         this.name = name;
         this.type = type;
         this.basePrice = basePrice;
+        this.kedvezmenyesPrice=kedvezmenyesPrice;
+    }
+
+    public int getKedvezmenyesPrice() {
+        return kedvezmenyesPrice;
+    }
+
+    public void setKedvezmenyesPrice(int kedvezmenyesPrice) {
+        this.kedvezmenyesPrice = kedvezmenyesPrice;
     }
 
     public String getName() {
