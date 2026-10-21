@@ -18,6 +18,9 @@ public class PersonalDataController {
     private DatePicker birthDatePicker;
 
     @FXML
+    private TextField passportField;
+
+    @FXML
     private void handleBack() throws IOException {
         App.setRoot("primary");
     }

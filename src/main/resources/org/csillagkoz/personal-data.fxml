@@ -23,6 +23,9 @@
         <Label text="Születési dátum:"/>
         <DatePicker fx:id="birthDatePicker" promptText="ÉÉÉÉ. HH. NN." prefWidth="300.0"/>
 
+        <Label text="Útlevél / Személyi igazolvány száma:"/>
+        <TextField fx:id="passportField" promptText="Pl. AB1234567" prefWidth="300.0" maxWidth="300.0"/>
+
         <HBox alignment="CENTER" spacing="20.0" style="-fx-padding: 15 0 0 0;">
             <children>
                 <Button text="← Vissza" prefWidth="120.0" onAction="#handleBack"/>
