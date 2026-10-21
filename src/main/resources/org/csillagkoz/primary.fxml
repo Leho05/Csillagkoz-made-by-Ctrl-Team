@@ -2,14 +2,19 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
+<VBox alignment="CENTER" spacing="15.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="org.csillagkoz.controller.PrimaryController">
     <children>
         <Label text="CSILLAGKÖZI LÉGITÁRSASÁG" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
         <Label text="Intergalaktikus Jegyfoglalás" style="-fx-text-fill: #666666;"/>
+
+        <Label text="Indulási csillagbázis / Bolygó:"/>
+        <ComboBox fx:id="departureComboBox" promptText="Válasszon indulási helyet..." prefWidth="300.0"/>
+
         <Button fx:id="primaryButton" text="Switch to Secondary View" onAction="#switchToSecondary"/>
     </children>
     <padding>
