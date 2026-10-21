@@ -2,9 +2,6 @@ package org.csillagkoz.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.DatePicker;
-import org.csillagkoz.App;
-
-import java.io.IOException;
 import java.time.LocalDate;
 
 public class PrimaryController {
@@ -16,10 +13,5 @@ public class PrimaryController {
         if (flightDatePicker != null) {
             flightDatePicker.setValue(LocalDate.now());
         }
-    }
-
-    @FXML
-    private void switchToSecondary() throws IOException {
-        App.setRoot("secondary");
     }
 }
