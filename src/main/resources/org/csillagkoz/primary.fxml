@@ -21,9 +21,12 @@
         <ComboBox fx:id="destinationComboBox" promptText="Válasszon célállomást..." prefWidth="300.0"/>
 
         <!-- Utazás dátuma (DatePicker) naptáras megjelenítéssel -->
-        <!-- A PrimaryController-ben csatoltam hozzá az aktuális dátumot! -->
         <Label text="Utazás dátuma:"/>
         <DatePicker fx:id="flightDatePicker" promptText="ÉÉÉÉ. HH. NN." prefWidth="300.0"/>
+
+        <!-- Utas típusa / Kedvezmény legördülő listája -->
+        <Label text="Utas típusa / Kedvezmény:"/>
+        <ComboBox fx:id="passengerTypeComboBox" promptText="Válasszon kedvezménytípust..." prefWidth="300.0"/>
     </children>
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
