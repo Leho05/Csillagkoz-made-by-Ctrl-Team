@@ -2,9 +2,11 @@ package org.csillagkoz.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.util.Callback;
 import org.csillagkoz.App;
 
 import java.io.IOException;
@@ -40,6 +42,23 @@ public class PrimaryController {
     public void initialize() {
         if (flightDatePicker != null) {
             flightDatePicker.setValue(LocalDate.now());
+
+            // --- Korábbi napok letiltása a naptárban ---
+            flightDatePicker.setDayCellFactory(new Callback<DatePicker, DateCell>() {
+                @Override
+                public DateCell call(DatePicker param) {
+                    return new DateCell() {
+                        @Override
+                        public void updateItem(LocalDate item, boolean empty) {
+                            super.updateItem(item, empty);
+                            if (item.isBefore(LocalDate.now())) {
+                                setDisable(true);
+                                setStyle("-fx-background-color: #ffcccc;"); // Opcionális: halvány piros háttér a múltbeli napoknak
+                            }
+                        }
+                    };
+                }
+            });
         }
     }
 
