@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox alignment="CENTER" spacing="15.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="org.csillagkoz.controller.PrimaryController">
 
-    <!-- Rádiógombok összekapcsolásához szükséges csoport definíciója.
-    Mely segítségével csak egy lesz mindíg kiválasztva -->
+    <!-- Rádiógombok összekapcsolásához szükséges csoport definíciója -->
     <fx:define>
         <ToggleGroup fx:id="classToggleGroup"/>
     </fx:define>
@@ -37,11 +38,19 @@
         <Label text="Utas típusa / Kedvezmény:"/>
         <ComboBox fx:id="passengerTypeComboBox" promptText="Válasszon kedvezménytípust..." prefWidth="300.0"/>
 
-        <!-- Kabin osztály rádiógombok (alapból üresek/kiválasztatlanok) -->
+        <!-- Kabin osztály rádiógombok -->
         <Label text="Kabin osztály:"/>
         <RadioButton fx:id="economyRadioButton" text="Turista / Harmad osztály (Economy)" toggleGroup="$classToggleGroup"/>
         <RadioButton fx:id="businessRadioButton" text="Business (Másod osztály)" toggleGroup="$classToggleGroup"/>
         <RadioButton fx:id="firstClassRadioButton" text="First Class (Első osztály)" toggleGroup="$classToggleGroup"/>
+
+        <!-- Alsó gombsor (Mégse és Járatok keresése) -->
+        <HBox alignment="CENTER" spacing="20.0" style="-fx-padding: 10 0 0 0;">
+            <children>
+                <Button fx:id="cancelButton" text="Mégse" prefWidth="130.0" onAction="#handleCancel"/>
+                <Button fx:id="searchButton" text="Járatok keresése ➔" prefWidth="150.0" onAction="#handleSearchFlights"/>
+            </children>
+        </HBox>
     </children>
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
