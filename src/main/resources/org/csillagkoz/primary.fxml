@@ -12,8 +12,13 @@
         <Label text="CSILLAGKÖZI LÉGITÁRSASÁG" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
         <Label text="Intergalaktikus Jegyfoglalás" style="-fx-text-fill: #666666;"/>
 
+        <!-- Indulási csillagbázis / Bolygó neve és legördülő listája -->
         <Label text="Indulási csillagbázis / Bolygó:"/>
         <ComboBox fx:id="departureComboBox" promptText="Válasszon indulási helyet..." prefWidth="300.0"/>
+
+        <!-- Célállomás (Bolygó, hold) neve és legördülő listája -->
+        <Label text="Célállomás (Bolygó / Kolónia):"/>
+        <ComboBox fx:id="destinationComboBox" promptText="Válasszon célállomást..." prefWidth="300.0"/>
 
         <Button fx:id="primaryButton" text="Switch to Secondary View" onAction="#switchToSecondary"/>
     </children>
