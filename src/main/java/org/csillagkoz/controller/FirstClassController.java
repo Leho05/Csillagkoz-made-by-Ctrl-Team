@@ -9,4 +9,9 @@ public class FirstClassController {
     private void handleBack() throws IOException {
         App.setRoot("primary");
     }
+
+    @FXML
+    private void handleNext() throws IOException {
+        App.setRoot("personal-data");
+    }
 }
