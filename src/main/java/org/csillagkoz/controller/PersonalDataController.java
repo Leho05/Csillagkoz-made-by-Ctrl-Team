@@ -30,4 +30,12 @@ public class PersonalDataController {
     private void handleBack() throws IOException {
         App.setRoot("primary");
     }
+
+    @FXML
+    private void handleFinalize() {
+        System.out.println("Foglalás sikeresen véglegesítve!");
+        System.out.println("Név: " + (lastNameField != null ? lastNameField.getText() : "") + " " + (firstNameField != null ? firstNameField.getText() : ""));
+        System.out.println("E-mail: " + (emailField != null ? emailField.getText() : ""));
+        System.out.println("Telefon: " + (phoneField != null ? phoneField.getText() : ""));
+    }
 }
