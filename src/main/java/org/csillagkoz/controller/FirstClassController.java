@@ -12,6 +12,7 @@ public class FirstClassController {
 
     @FXML
     private void handleNext() throws IOException {
+        PersonalDataController.setPreviousView("firstclass-seats");
         App.setRoot("personal-data");
     }
 }

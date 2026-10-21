@@ -8,6 +8,13 @@ import java.io.IOException;
 
 public class PersonalDataController {
 
+    // --- Tároljuk, hogy melyik kabinból érkeztünk ---
+    private static String previousView = "primary";
+
+    public static void setPreviousView(String viewName) {
+        previousView = viewName;
+    }
+
     @FXML
     private TextField lastNameField;
 
@@ -28,7 +35,8 @@ public class PersonalDataController {
 
     @FXML
     private void handleBack() throws IOException {
-        App.setRoot("primary");
+        // Dinamikusan arra az oldalra megy vissza, ahonnan jöttünk
+        App.setRoot(previousView);
     }
 
     @FXML

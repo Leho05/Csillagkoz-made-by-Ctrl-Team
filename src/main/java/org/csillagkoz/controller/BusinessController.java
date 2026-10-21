@@ -12,6 +12,7 @@ public class BusinessController {
 
     @FXML
     private void handleNext() throws IOException {
+        PersonalDataController.setPreviousView("business-seats");
         App.setRoot("personal-data");
     }
 }

@@ -12,6 +12,7 @@ public class EconomyController {
 
     @FXML
     private void handleNext() throws IOException {
+        PersonalDataController.setPreviousView("economy-seats");
         App.setRoot("personal-data");
     }
 }
