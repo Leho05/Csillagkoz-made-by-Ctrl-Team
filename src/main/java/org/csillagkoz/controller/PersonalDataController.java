@@ -3,6 +3,7 @@ package org.csillagkoz.controller;
 import javafx.fxml.FXML;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 import org.csillagkoz.App;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -65,9 +66,15 @@ public class PersonalDataController {
         }
 
         // Ha minden feltétel teljesül:
-        System.out.println("Foglalás sikeresen véglegesítve!");
+        System.out.println("A jegy vásárlása sikeresen megtörtént!");
         System.out.println("Név: " + lastNameField.getText() + " " + firstNameField.getText());
         System.out.println("E-mail: " + emailField.getText());
         System.out.println("Telefon: " + phoneField.getText());
+
+        // --- GUI ablak bezárása ---
+        Stage stage = (Stage) lastNameField.getScene().getWindow();
+        if (stage != null) {
+            stage.close();
+        }
     }
 }
