@@ -1,6 +1,7 @@
 package org.csillagkoz.controller;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
@@ -12,9 +13,18 @@ import java.time.LocalDate;
 public class PrimaryController {
 
     @FXML
+    private ComboBox<String> departureComboBox;
+
+    @FXML
+    private ComboBox<String> destinationComboBox;
+
+    @FXML
+    private ComboBox<String> passengerTypeComboBox;
+
+    @FXML
     private DatePicker flightDatePicker;
 
-    // --- A rádiógombok által más-más a kiválasztott osztálynak megfelelő ablak megnyitása ---
+    // --- A rádiógombok és a csoport ---
     @FXML
     private ToggleGroup classToggleGroup;
 
@@ -33,17 +43,34 @@ public class PrimaryController {
         }
     }
 
-    // --- A mégse gomb létrehozása ---
+    // --- A Mégse gomb: mindent alaphelyzetbe/üresre állít ---
     @FXML
     private void handleCancel() {
-        // Itt alaphelyzetbe állíthatjuk a mezőket vagy kezelhetjük a kilépést
-        System.out.println("Mégse gomb megnyomva.");
+        if (departureComboBox != null) {
+            departureComboBox.getSelectionModel().clearSelection();
+            departureComboBox.setValue(null);
+        }
+        if (destinationComboBox != null) {
+            destinationComboBox.getSelectionModel().clearSelection();
+            destinationComboBox.setValue(null);
+        }
+        if (passengerTypeComboBox != null) {
+            passengerTypeComboBox.getSelectionModel().clearSelection();
+            passengerTypeComboBox.setValue(null);
+        }
+        if (flightDatePicker != null) {
+            flightDatePicker.setValue(LocalDate.now()); // Vagy null, ha teljesen üresen szeretnéd: flightDatePicker.setValue(null);
+        }
+        if (classToggleGroup != null && classToggleGroup.getSelectedToggle() != null) {
+            classToggleGroup.getSelectedToggle().setSelected(false);
+        }
+
+        System.out.println("Mezők alaphelyzetbe állítva."); // Megjegyzés: a System.out-hoz igazítva
     }
 
-    // --- Új eseménykezelő a Járatok keresése gombhoz ---
+    // --- Járatok keresése gomb eseménykezelője ---
     @FXML
     private void handleSearchFlights() throws IOException {
-        // Ellenőrizzük, hogy melyik kabin osztály lett kiválasztva
         if (economyRadioButton != null && economyRadioButton.isSelected()) {
             App.setRoot("economy-seats");
         } else if (businessRadioButton != null && businessRadioButton.isSelected()) {
@@ -51,7 +78,6 @@ public class PrimaryController {
         } else if (firstClassRadioButton != null && firstClassRadioButton.isSelected()) {
             App.setRoot("firstclass-seats");
         } else {
-            // Ha nincsen kiválasztva kabin osztály
             System.out.println("Kérjük, válasszon kabin osztályt a továbblépéshez!");
         }
     }
