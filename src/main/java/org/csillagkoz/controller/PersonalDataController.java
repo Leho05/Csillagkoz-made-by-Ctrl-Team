@@ -24,6 +24,9 @@ public class PersonalDataController {
     private TextField emailField;
 
     @FXML
+    private TextField phoneField;
+
+    @FXML
     private void handleBack() throws IOException {
         App.setRoot("primary");
     }
