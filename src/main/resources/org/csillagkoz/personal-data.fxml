@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" spacing="12.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.csillagkoz.controller.PersonalDataController">
+    <children>
+        <Label text="UTAS SZEMÉLYES ADATAI" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+        <Label text="Kérjük, adja meg a hivatalos úti okmány szerinti adatokat." style="-fx-text-fill: #666666;"/>
+
+        <HBox alignment="CENTER" spacing="20.0" style="-fx-padding: 15 0 0 0;">
+            <children>
+                <Button text="← Vissza" prefWidth="120.0" onAction="#handleBack"/>
+            </children>
+        </HBox>
+    </children>
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+    </padding>
+</VBox>
