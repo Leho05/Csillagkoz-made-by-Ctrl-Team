@@ -21,6 +21,9 @@ public class PersonalDataController {
     private TextField passportField;
 
     @FXML
+    private TextField emailField;
+
+    @FXML
     private void handleBack() throws IOException {
         App.setRoot("primary");
     }
