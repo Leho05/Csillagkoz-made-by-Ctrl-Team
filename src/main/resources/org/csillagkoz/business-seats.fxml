@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.csillagkoz.controller.BusinessController">
+    <children>
+        <Label text="BUSINESS OSZTÁLY" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+        <Label text="Kényelmesebb, tágasabb székek és extra szolgáltatások." style="-fx-text-fill: #666666;"/>
+
+        <!-- Itt lesz majd a business székek elhelyezkedése -->
+        <Label text="[ Ide jönnek a business székek gombjai ]" style="-fx-padding: 40px;"/>
+
+        <Button text="← Vissza az előző oldalra" onAction="#handleBack"/>
+    </children>
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+    </padding>
+</VBox>
