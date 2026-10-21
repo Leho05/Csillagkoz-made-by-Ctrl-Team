@@ -4,10 +4,19 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox alignment="CENTER" spacing="15.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="org.csillagkoz.controller.PrimaryController">
+
+    <!-- Rádiógombok összekapcsolásához szükséges csoport definíciója.
+    Mely segítségével csak egy lesz mindíg kiválasztva -->
+    <fx:define>
+        <ToggleGroup fx:id="classToggleGroup"/>
+    </fx:define>
+
     <children>
         <Label text="CSILLAGKÖZI LÉGITÁRSASÁG" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
         <Label text="Intergalaktikus Jegyfoglalás" style="-fx-text-fill: #666666;"/>
@@ -27,6 +36,12 @@
         <!-- Utas típusa / Kedvezmény legördülő listája -->
         <Label text="Utas típusa / Kedvezmény:"/>
         <ComboBox fx:id="passengerTypeComboBox" promptText="Válasszon kedvezménytípust..." prefWidth="300.0"/>
+
+        <!-- Kabin osztály rádiógombok (alapból üresek/kiválasztatlanok) -->
+        <Label text="Kabin osztály:"/>
+        <RadioButton fx:id="economyRadioButton" text="Turista / Harmad osztály (Economy)" toggleGroup="$classToggleGroup"/>
+        <RadioButton fx:id="businessRadioButton" text="Business (Másod osztály)" toggleGroup="$classToggleGroup"/>
+        <RadioButton fx:id="firstClassRadioButton" text="First Class (Első osztály)" toggleGroup="$classToggleGroup"/>
     </children>
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
