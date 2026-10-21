@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
@@ -14,7 +15,12 @@
         <!-- Itt lesz majd a business székek elhelyezkedése -->
         <Label text="[ Ide jönnek a business székek gombjai ]" style="-fx-padding: 40px;"/>
 
-        <Button text="← Vissza az előző oldalra" onAction="#handleBack"/>
+        <HBox alignment="CENTER" spacing="20.0">
+            <children>
+                <Button text="← Vissza az előző oldalra" onAction="#handleBack"/>
+                <Button text="Tovább a személyes adatokhoz →" onAction="#handleNext"/>
+            </children>
+        </HBox>
     </children>
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
