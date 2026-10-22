@@ -17,7 +17,9 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("primary"), 640, 480);
+        scene = new Scene(loadFXML("ticket-booking"), 960, 600);
+
+        stage.setTitle("Csillagköz - Jegyfoglalás");
         stage.setScene(scene);
         stage.show();
     }
