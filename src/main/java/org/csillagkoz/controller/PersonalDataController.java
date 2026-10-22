@@ -60,7 +60,7 @@ public class PersonalDataController implements ModelAware {
                 model.setBirthDate(birthDatePicker.getValue());
             }
             if (passportField != null && passportField.getText() != null) {
-                model.setPassportNumber(passportField.getText().trim());
+                model.setPassportNumber(passportField.getText().trim().toUpperCase());
             }
             if (emailField != null && emailField.getText() != null) {
                 model.setEmail(emailField.getText().trim());
@@ -123,8 +123,8 @@ public class PersonalDataController implements ModelAware {
 
         // 3. Ellenőrzés: E-mail cím formátuma
         String email = emailField.getText().trim();
-        if (!email.contains("@") || !email.contains(".")) {
-            System.out.println("Hiba: Érvénytelen e-mail cím formatum!");
+        if (!email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+            System.out.println("Hibás e-mail! Kérjük, érvényes e-mail címet adjon meg (pl. nev@domain.com)!");
             // TODO szebb hiba kiírás
             return;
         }
@@ -132,22 +132,23 @@ public class PersonalDataController implements ModelAware {
         // 4. Ellenőrzés: Telefonszám (+CC... vagy 06...)
         String phone = phoneField.getText().trim();
 
-        if (!phone.matches("^(\\+\\d{8,15}|06\\d{9})$")) {
-            System.out.println("Hiba: Érvénytelen telefonszám! Elvárt formátum: nemzetközi (+ és országhívó) vagy belföldi (06...), szóközök és kötőjelek nélkül.\"");
+        if (!phone.matches("^(\\+\\d{8,15}|0\\d{8,14})$")) {
+            System.out.println("Hiba: Érvénytelen telefonszám! Elvárt formátum: nemzetközi (+ és országhívó) vagy belföldi (0-val kezdődő) számjegyek.");
             // TODO szebb hiba kiírás
             return;
         }
 
         // 5. Ellenőrzés: Útlevél / Személyi igazolvány száma (minimum 6 karakter)
-        String passport = passportField.getText().trim();
-        if (passport.length() < 8) {
-            System.out.println("Hiba: Érvénytelen útlevél/személyi szám! Minimum 6 karakter szükséges.");
+        String passport = passportField.getText().trim().toUpperCase();
+        if (!passport.matches("^[A-Z0-9]{6,10}$")) {
+            System.out.println("Hiba: Érvénytelen útlevél/személyi igazolvány szám! Csak betűket és számokat tartalmazhat (6-10 karakter).");
+            // TODO szebb hiba kiírás
             return;
         }
 
         //Sikeres validációnál mentjük a modellbe
         saveInputToModel();
-        
+
         //Adatok megjelenítése a képernyőn
         System.out.println("A jegy vásárlása sikeresen megtörtént!");
         if (model != null) {
