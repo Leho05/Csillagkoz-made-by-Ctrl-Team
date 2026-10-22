@@ -48,8 +48,32 @@ public class PersonalDataController implements ModelAware {
     @FXML
     private TextField phoneField;
 
+    private void saveInputToModel() {
+        if (model != null) {
+            if (lastNameField != null && lastNameField.getText() != null) {
+                model.setLastName(lastNameField.getText().trim());
+            }
+            if (firstNameField != null && firstNameField.getText() != null) {
+                model.setFirstName(firstNameField.getText().trim());
+            }
+            if (birthDatePicker != null) {
+                model.setBirthDate(birthDatePicker.getValue());
+            }
+            if (passportField != null && passportField.getText() != null) {
+                model.setPassportNumber(passportField.getText().trim());
+            }
+            if (emailField != null && emailField.getText() != null) {
+                model.setEmail(emailField.getText().trim());
+            }
+            if (phoneField != null && phoneField.getText() != null) {
+                model.setPhone(phoneField.getText().trim());
+            }
+        }
+    }
+
     @FXML
     private void handleBack() throws IOException {
+        saveInputToModel();
         String targetView;
         String targetTitle;
 
@@ -97,19 +121,39 @@ public class PersonalDataController implements ModelAware {
             return;
         }
 
-        // 3. Adatok elmentése a központi BookingModel-be
-        if (model != null) {
-            model.setLastName(lastNameField.getText().trim());
-            model.setFirstName(firstNameField.getText().trim());
-            model.setBirthDate(birthDate);
-            model.setPassportNumber(passportField.getText().trim());
-            model.setEmail(emailField.getText().trim());
-            model.setPhone(phoneField.getText().trim());
+        // 3. Ellenőrzés: E-mail cím formátuma
+        String email = emailField.getText().trim();
+        if (!email.contains("@") || !email.contains(".")) {
+            System.out.println("Hiba: Érvénytelen e-mail cím formatum!");
+            // TODO szebb hiba kiírás
+            return;
         }
 
+        // 4. Ellenőrzés: Telefonszám (+CC... vagy 06...)
+        String phone = phoneField.getText().trim();
+
+        if (!phone.matches("^(\\+\\d{8,15}|06\\d{9})$")) {
+            System.out.println("Hiba: Érvénytelen telefonszám! Elvárt formátum: nemzetközi (+ és országhívó) vagy belföldi (06...), szóközök és kötőjelek nélkül.\"");
+            // TODO szebb hiba kiírás
+            return;
+        }
+
+        // 5. Ellenőrzés: Útlevél / Személyi igazolvány száma (minimum 6 karakter)
+        String passport = passportField.getText().trim();
+        if (passport.length() < 8) {
+            System.out.println("Hiba: Érvénytelen útlevél/személyi szám! Minimum 6 karakter szükséges.");
+            return;
+        }
+
+        //Sikeres validációnál mentjük a modellbe
+        saveInputToModel();
+        
+        //Adatok megjelenítése a képernyőn
         System.out.println("A jegy vásárlása sikeresen megtörtént!");
         if (model != null) {
             System.out.println("Utas: " + model.getLastName() + " " + model.getFirstName());
+            System.out.println("E-mail: " + model.getEmail());
+            System.out.println("Telefon szám: " + model.getPhone());
             System.out.println("Úti cél: " + model.getDestination() + " (" + model.getSelectedClass() + ")");
         }
 

@@ -16,6 +16,39 @@ public class TicketBookingController implements ModelAware {
     @Override
     public void setModel(BookingModel model) {
         this.model = model;
+
+        if (model != null) {
+            // Legördülő listák és dátumválasztó értékének visszatöltése
+            if (departureComboBox != null && model.getDeparture() != null) {
+                departureComboBox.setValue(model.getDeparture());
+            }
+            if (destinationComboBox != null && model.getDestination() != null) {
+                destinationComboBox.setValue(model.getDestination());
+            }
+            if (flightDatePicker != null && model.getFlightDate() != null) {
+                flightDatePicker.setValue(model.getFlightDate());
+            }
+            if (passengerTypeComboBox != null && model.getPassengerType() != null) {
+                passengerTypeComboBox.setValue(model.getPassengerType());
+            }
+
+            //  Jegy tipus visszatöltése
+            if (model.getSelectedClass() != null) {
+                if ("ECONOMY".equals(model.getSelectedClass())) {
+                    if (economyRadioButton != null) {
+                        economyRadioButton.setSelected(true);
+                    }
+                } else if ("BUSINESS".equals(model.getSelectedClass())) {
+                    if (businessRadioButton != null) {
+                        businessRadioButton.setSelected(true);
+                    }
+                } else if ("FIRST_CLASS".equals(model.getSelectedClass())) {
+                    if (firstClassRadioButton != null) {
+                        firstClassRadioButton.setSelected(true);
+                    }
+                }
+            }
+        }
     }
 
     @FXML
