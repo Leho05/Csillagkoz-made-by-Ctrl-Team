@@ -2,17 +2,28 @@ package org.csillagkoz.controller;
 
 import javafx.fxml.FXML;
 import org.csillagkoz.App;
+import org.csillagkoz.model.BookingModel;
+
 import java.io.IOException;
 
-public class EconomyController {
+public class EconomyController implements ModelAware {
+    private BookingModel model;
+
+    @Override
+    public void setModel(BookingModel model) {
+        this.model = model;
+    }
+
     @FXML
     private void handleBack() throws IOException {
-        App.setRoot("primary");
+        App.setRoot("ticket-booking", "Csillagköz - Jegyfoglalás");
     }
 
     @FXML
     private void handleNext() throws IOException {
-        PersonalDataController.setPreviousView("economy-seats");
-        App.setRoot("personal-data");
+        if (model != null) {
+            model.setPreviousView("economy-seats");
+        }
+        App.setRoot("personal-data", "Csillagköz - Személyes adatok");
     }
 }

@@ -5,17 +5,29 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.csillagkoz.App;
+import org.csillagkoz.model.BookingModel;
+
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Period;
 
-public class PersonalDataController {
+public class PersonalDataController implements ModelAware {
 
-    // --- Tároljuk, hogy melyik kabinból érkeztünk ---
-    private static String previousView = "primary";
+    private BookingModel model;
 
-    public static void setPreviousView(String viewName) {
-        previousView = viewName;
+    @Override
+    public void setModel(BookingModel model) {
+        this.model = model;
+
+        // Ha a modellben már el vannak mentve adatok (pl. visszalépett majd újra idejött), automatikusan kitöltjük a mezőket:
+        if (model != null && model.getLastName() != null) {
+            if (lastNameField != null) lastNameField.setText(model.getLastName());
+            if (firstNameField != null) firstNameField.setText(model.getFirstName());
+            if (birthDatePicker != null) birthDatePicker.setValue(model.getBirthDate());
+            if (passportField != null) passportField.setText(model.getPassportNumber());
+            if (emailField != null) emailField.setText(model.getEmail());
+            if (phoneField != null) phoneField.setText(model.getPhone());
+        }
     }
 
     @FXML
@@ -38,8 +50,26 @@ public class PersonalDataController {
 
     @FXML
     private void handleBack() throws IOException {
-        // Dinamikusan arra az oldalra megy vissza, ahonnan jöttünk
-        App.setRoot(previousView);
+        String targetView;
+        String targetTitle;
+
+        if (model != null && model.getPreviousView() != null) {
+            targetView = model.getPreviousView();
+        } else {
+            targetView = "ticket-booking";
+        }
+
+        if ("economy-seats".equals(targetView)) {
+            targetTitle = "Csillagköz - Harmad osztály";
+        } else if ("business-seats".equals(targetView)) {
+            targetTitle = "Csillagköz - Másod osztály";
+        } else if ("firstclass-seats".equals(targetView)) {
+            targetTitle = "Csillagköz - Első osztály";
+        } else {
+            targetTitle = "Csillagköz - Jegyfoglalás";
+        }
+
+        App.setRoot(targetView, targetTitle);
     }
 
     @FXML
@@ -53,6 +83,7 @@ public class PersonalDataController {
                 phoneField == null || phoneField.getText().trim().isEmpty()) {
 
             System.out.println("Hiba: Kérjük, töltsön ki minden mezőt a továbblépéshez!");
+            // TODO szebb hiba kiírás
             return;
         }
 
@@ -62,16 +93,27 @@ public class PersonalDataController {
 
         if (age < 18) {
             System.out.println("Hiba: A jegyvásárló nem múlt el 18 éves, a foglalás nem véglegesíthető!");
+            // TODO szebb hiba kiírás
             return;
         }
 
-        // Ha minden feltétel teljesül:
-        System.out.println("A jegy vásárlása sikeresen megtörtént!");
-        System.out.println("Név: " + lastNameField.getText() + " " + firstNameField.getText());
-        System.out.println("E-mail: " + emailField.getText());
-        System.out.println("Telefon: " + phoneField.getText());
+        // 3. Adatok elmentése a központi BookingModel-be
+        if (model != null) {
+            model.setLastName(lastNameField.getText().trim());
+            model.setFirstName(firstNameField.getText().trim());
+            model.setBirthDate(birthDate);
+            model.setPassportNumber(passportField.getText().trim());
+            model.setEmail(emailField.getText().trim());
+            model.setPhone(phoneField.getText().trim());
+        }
 
-        // --- GUI ablak bezárása ---
+        System.out.println("A jegy vásárlása sikeresen megtörtént!");
+        if (model != null) {
+            System.out.println("Utas: " + model.getLastName() + " " + model.getFirstName());
+            System.out.println("Úti cél: " + model.getDestination() + " (" + model.getSelectedClass() + ")");
+        }
+
+        // GUI ablak bezárása
         Stage stage = (Stage) lastNameField.getScene().getWindow();
         if (stage != null) {
             stage.close();

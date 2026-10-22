@@ -1,18 +1,22 @@
 package org.csillagkoz.controller;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DateCell;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.util.Callback;
 import org.csillagkoz.App;
+import org.csillagkoz.model.BookingModel;
 
 import java.io.IOException;
 import java.time.LocalDate;
 
-public class TicketBookingController {
+public class TicketBookingController implements ModelAware {
+
+    private BookingModel model;
+
+    @Override
+    public void setModel(BookingModel model) {
+        this.model = model;
+    }
 
     @FXML
     private ComboBox<String> departureComboBox;
@@ -90,14 +94,25 @@ public class TicketBookingController {
     // --- Járatok keresése gomb eseménykezelője ---
     @FXML
     private void handleSearchFlights() throws IOException {
+        if (model != null) {
+            if (departureComboBox != null) model.setDeparture(departureComboBox.getValue());
+            if (destinationComboBox != null) model.setDestination(destinationComboBox.getValue());
+            if (flightDatePicker != null) model.setFlightDate(flightDatePicker.getValue());
+            if (passengerTypeComboBox != null) model.setPassengerType(passengerTypeComboBox.getValue());
+        }
+
         if (economyRadioButton != null && economyRadioButton.isSelected()) {
-            App.setRoot("economy-seats");
+            if (model != null) model.setSelectedClass("ECONOMY");
+            App.setRoot("economy-seats", "Csillagköz - Harmad osztály");
         } else if (businessRadioButton != null && businessRadioButton.isSelected()) {
-            App.setRoot("business-seats");
+            if (model != null) model.setSelectedClass("BUSINESS");
+            App.setRoot("business-seats", "Csillagköz - Másod osztály");
         } else if (firstClassRadioButton != null && firstClassRadioButton.isSelected()) {
-            App.setRoot("firstclass-seats");
+            if (model != null) model.setSelectedClass("FIRST_CLASS");
+            App.setRoot("firstclass-seats", "Csillagköz - Első osztály");
         } else {
             System.out.println("Kérjük, válasszon kabin osztályt a továbblépéshez!");
+            // TODO szebb hiba kiírás
         }
     }
 }
