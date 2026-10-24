@@ -1,5 +1,5 @@
 package org.csillagkoz;
-
+import org.csillagkoz.database.Database;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,7 +14,10 @@ import java.io.IOException;
 public class App extends Application {
 
     private static Scene scene;
-
+    @Override
+    public void init() {
+        Database.initDatabase();
+    }
     @Override
     public void start(Stage stage) throws IOException {
         scene = new Scene(loadFXML("ticket-booking"), 960, 600);

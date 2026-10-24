@@ -2,6 +2,7 @@ package org.csillagkoz.database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -47,8 +48,30 @@ public class Database {
             stmt.execute(createFlightTable);
             stmt.execute(createPassengerTable);
             stmt.execute(createTicketTable);
+
+            seedInitialData(stmt);
+
         } catch (SQLException e) {
+            System.err.println("Hiba az adatbázis inicializálásakor: " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    private static void seedInitialData(Statement stmt) throws SQLException {
+        try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM flights;")) {
+            if (rs.next() && rs.getInt(1) == 0) {
+                String insertFlights = "INSERT INTO flights ("
+                        + "flight_id, destination_name, destination_type, base_price, "
+                        + "departure_time, booking_deadline, max_capacity, available_seats, status"
+                        + ") VALUES "
+                        + "('MARS-2026-01', 'Mars Kolónia Alpha', 'PLANET', 180000, '2026-11-10T08:00', '2026-11-08T08:00', 40, 40, 'FOGLALHATÓ'), "
+                        + "('MOON-2026-01', 'Luna Bázis', 'MOON', 65000, '2026-11-05T14:30', '2026-11-03T14:30', 50, 50, 'FOGLALHATÓ'), "
+                        + "('TITAN-2026-01', 'Titan Kutatóállomás', 'MOON', 320000, '2026-12-01T10:00', '2026-11-28T10:00', 30, 30, 'FOGLALHATÓ'), "
+                        + "('EUROPA-2026-01', 'Europa Óceánbázis', 'MOON', 290000, '2026-12-15T09:15', '2026-12-12T09:15', 30, 30, 'FOGLALHATÓ');";
+
+                stmt.executeUpdate(insertFlights);
+                System.out.println("Kezdő járatadatok sikeresen inicializálva az adatbázisban.");
+            }
         }
     }
 }
