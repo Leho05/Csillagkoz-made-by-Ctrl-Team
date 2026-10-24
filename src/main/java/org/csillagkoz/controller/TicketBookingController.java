@@ -5,9 +5,13 @@ import javafx.scene.control.*;
 import javafx.util.Callback;
 import org.csillagkoz.App;
 import org.csillagkoz.model.BookingModel;
+import org.csillagkoz.database.FlightDao;
+import org.csillagkoz.model.Flight;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.List;
 
 public class TicketBookingController implements ModelAware {
 
@@ -76,7 +80,33 @@ public class TicketBookingController implements ModelAware {
     @FXML
     private RadioButton firstClassRadioButton;
 
+    private final FlightDao flightDao = new FlightDao();
+
     public void initialize() {
+        // --- ComboBoxok feltöltése ---
+        if (departureComboBox != null) {
+            departureComboBox.getItems().addAll("Föld (Terra Központ)", "Hold (Luna Bázis)", "Mars Kolónia Alpha");
+        }
+
+        if (passengerTypeComboBox != null) {
+            passengerTypeComboBox.getItems().addAll("Teljes árú (Felnőtt)", "Gyermek / Diák", "Nyugdíjas");
+        }
+
+        if (destinationComboBox != null) {
+            try {
+                List<Flight> flights = flightDao.getAllFlights();
+                for (Flight flight : flights) {
+                    String destination = flight.getDestination().getName();
+                    if (!destinationComboBox.getItems().contains(destination)) {
+                        destinationComboBox.getItems().add(destination);
+                    }
+                }
+            } catch (SQLException e) {
+                System.err.println("Nem sikerült lekérni a célállomásokat: " + e.getMessage());
+            }
+        }
+
+        // --- Korábbi napok letiltása a naptárban ---
         if (flightDatePicker != null) {
             flightDatePicker.setValue(LocalDate.now());
 
