@@ -2,6 +2,7 @@ package org.csillagkoz.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import org.csillagkoz.App;
 import org.csillagkoz.model.BookingModel;
@@ -66,6 +67,9 @@ public class TicketBookingController implements ModelAware {
 
     @FXML
     private DatePicker flightDatePicker;
+
+    @FXML
+    private VBox radioContainer;
 
     // --- Hibaüzenet címkék FXML kötései ---
     @FXML
@@ -190,6 +194,9 @@ public class TicketBookingController implements ModelAware {
         if (classToggleGroup != null && classToggleGroup.getSelectedToggle() != null) {
             classToggleGroup.getSelectedToggle().setSelected(false);
         }
+        if (radioContainer != null) {
+            radioContainer.setStyle("");
+        }
         if (classErrorLabel != null) {
             classErrorLabel.setVisible(false);
             classErrorLabel.setManaged(false);
@@ -273,12 +280,18 @@ public class TicketBookingController implements ModelAware {
         }
 
         if (classToggleGroup == null || classToggleGroup.getSelectedToggle() == null) {
+            if (radioContainer != null) {
+                radioContainer.setStyle("-fx-background-color: #fff0f0; -fx-border-color: #ff4d4d; -fx-border-width: 1.5px; -fx-border-radius: 4px; -fx-padding: 8px;");
+            }
             if (classErrorLabel != null) {
                 classErrorLabel.setVisible(true);
                 classErrorLabel.setManaged(true);
             }
             isValid = false;
         } else {
+            if (radioContainer != null) {
+                radioContainer.setStyle("");
+            }
             if (classErrorLabel != null) {
                 classErrorLabel.setVisible(false);
                 classErrorLabel.setManaged(false);
