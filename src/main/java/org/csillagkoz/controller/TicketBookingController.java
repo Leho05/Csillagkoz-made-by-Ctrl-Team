@@ -286,8 +286,6 @@ public class TicketBookingController implements ModelAware {
         }
 
         if (!isValid) {
-            System.out.println("Kérjük, töltsön ki minden kötelező mezőt és válasszon kabin osztályt a továbblépéshez!");
-            // TODO szebb hiba kiírás
             return;
         }
 
@@ -307,9 +305,6 @@ public class TicketBookingController implements ModelAware {
         } else if (firstClassRadioButton != null && firstClassRadioButton.isSelected()) {
             if (model != null) model.setSelectedClass("FIRST_CLASS");
             App.setRoot("firstclass-seats", "Csillagköz - Első osztály");
-        } else {
-            System.out.println("Kérjük, válasszon kabin osztályt a továbblépéshez!");
-            // TODO szebb hiba kiírás
         }
     }
 }
