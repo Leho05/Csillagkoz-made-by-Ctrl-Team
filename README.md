@@ -11,6 +11,7 @@ Egy asztali JavaFX alkalmazás, amely intergalaktikus űrutazások jegyfoglalás
 * **Többosztályos kabinkezelés**: Foglalási lehetőség Turista (Economy), Üzleti (Business) és Első osztályon (First Class), külön vizuális üléskiosztással.
 * **Automatikus árkalkuláció**: Üzleti szabályok szerinti kedvezmények számítása célállomás típus (pl. Hold úti célok esetén kedvezmény) és kabinosztály-szorzók (Business: 1.5x, First Class: 2.5x) alapján.
 * **Automatikus adatbázis-inicializálás és Seeding**: Az alkalmazás indításakor felépíti a relációs sémát és előkészíti a tesztjáratokat.
+* **Központi állapotkezelés (BookingModel & ModelAware)**: A nézetek közötti adatáramlást egy dedikált BookingModel entitás és a ModelAware interfész biztosítja, zökkenőmentes élményt nyújtva a kereséstől a személyes adatok megadásáig.
 
 ---
 
@@ -41,13 +42,15 @@ Csillagkoz-made-by-Ctrl-Team/
     │   │   ├── EconomyController.java       # Turista osztály ülésválasztása
     │   │   ├── BusinessController.java      # Üzleti osztály ülésválasztása
     │   │   ├── FirstClassController.java    # Első osztály ülésválasztása
-    │   │   └── PersonalDataController.java  # Utas személyes adatainak bekérése
+    │   │   ├── PersonalDataController.java  # Utas személyes adatainak bekérése
+    │   │   └── ModelAware.java              # Interfész a modell megosztásához a vezérlők között[cite: 1]
     │   ├── database/                        # Adatbázis réteg
     │   │   ├── Database.java                # Kapcsolatkezelés és inicializálás/seeding
     │   │   ├── FlightDao.java               # Járatok lekérdezése és módosítása
     │   │   ├── PassengerDao.java            # Utasok mentése és lekérdezése
     │   │   └── TicketDao.java               # Lefoglalt jegyek mentése
     │   ├── model/                           # Entitások és adatmodellek
+    │   │   ├── BookingModel.java            # Központi foglalási adatáramlási modell[cite: 1]
     │   │   ├── Destination.java             # Célállomás (név, típus, alapár)
     │   │   ├── Flight.java                  # Járat modell (kapacitás, határidők, státusz)
     │   │   ├── Passenger.java               # Utas modell (galaktikus ID, név, kor)
