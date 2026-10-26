@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" spacing="15.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
+<VBox alignment="CENTER" spacing="12.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="org.csillagkoz.controller.TicketBookingController">
 
     <!-- Rádiógombok összekapcsolásához szükséges csoport definíciója -->
@@ -23,23 +23,48 @@
         <Label text="Intergalaktikus Jegyfoglalás" style="-fx-text-fill: #666666;"/>
 
         <!-- Indulási csillagbázis / Bolygó neve és legördülő listája -->
-        <Label text="Indulási csillagbázis / Bolygó:"/>
+        <HBox maxWidth="300.0" alignment="BOTTOM_LEFT" spacing="8.0">
+            <children>
+                <Label text="Indulási csillagbázis / Bolygó:"/>
+                <Label fx:id="departureErrorLabel" text="* A mező kitöltése kötelező" style="-fx-text-fill: #ff4d4d; -fx-font-size: 11px;" visible="false" managed="false"/>
+            </children>
+        </HBox>
         <ComboBox fx:id="departureComboBox" promptText="Válasszon indulási helyet..." prefWidth="300.0"/>
 
         <!-- Célállomás (Bolygó, hold) neve és legördülő listája -->
-        <Label text="Célállomás (Bolygó / Kolónia):"/>
+        <HBox maxWidth="300.0" alignment="BOTTOM_LEFT" spacing="8.0">
+            <children>
+                <Label text="Célállomás (Bolygó / Kolónia):"/>
+                <Label fx:id="destinationErrorLabel" text="* A mező kitöltése kötelező" style="-fx-text-fill: #ff4d4d; -fx-font-size: 11px;" visible="false" managed="false"/>
+            </children>
+        </HBox>
         <ComboBox fx:id="destinationComboBox" promptText="Válasszon célállomást..." prefWidth="300.0"/>
 
         <!-- Utazás dátuma (DatePicker) naptáras megjelenítéssel -->
-        <Label text="Utazás dátuma:"/>
+        <HBox maxWidth="300.0" alignment="BOTTOM_LEFT" spacing="8.0">
+            <children>
+                <Label text="Utazás dátuma:"/>
+                <Label fx:id="dateErrorLabel" text="* A mező kitöltése kötelező" style="-fx-text-fill: #ff4d4d; -fx-font-size: 11px;" visible="false" managed="false"/>
+            </children>
+        </HBox>
         <DatePicker fx:id="flightDatePicker" promptText="ÉÉÉÉ. HH. NN." prefWidth="300.0"/>
 
         <!-- Utas típusa / Kedvezmény legördülő listája -->
-        <Label text="Utas típusa / Kedvezmény:"/>
+        <HBox maxWidth="300.0" alignment="BOTTOM_LEFT" spacing="8.0">
+            <children>
+                <Label text="Utas típusa / Kedvezmény:"/>
+                <Label fx:id="passengerErrorLabel" text="* A mező kitöltése kötelező" style="-fx-text-fill: #ff4d4d; -fx-font-size: 11px;" visible="false" managed="false"/>
+            </children>
+        </HBox>
         <ComboBox fx:id="passengerTypeComboBox" promptText="Válasszon kedvezménytípust..." prefWidth="300.0"/>
 
         <!-- Kabin osztály rádiógombok -->
-        <Label text="Kabin osztály:"/>
+        <HBox maxWidth="300.0" alignment="BOTTOM_LEFT" spacing="8.0">
+            <children>
+                <Label text="Kabin osztály:"/>
+                <Label fx:id="classErrorLabel" text="* A mező kitöltése kötelező" style="-fx-text-fill: #ff4d4d; -fx-font-size: 11px;" visible="false" managed="false"/>
+            </children>
+        </HBox>
         <RadioButton fx:id="economyRadioButton" text="Turista / Harmad osztály (Economy)" toggleGroup="$classToggleGroup"/>
         <RadioButton fx:id="businessRadioButton" text="Business (Másod osztály)" toggleGroup="$classToggleGroup"/>
         <RadioButton fx:id="firstClassRadioButton" text="First Class (Első osztály)" toggleGroup="$classToggleGroup"/>

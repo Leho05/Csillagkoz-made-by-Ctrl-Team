@@ -67,6 +67,22 @@ public class TicketBookingController implements ModelAware {
     @FXML
     private DatePicker flightDatePicker;
 
+    // --- Hibaüzenet címkék FXML kötései ---
+    @FXML
+    private Label departureErrorLabel;
+
+    @FXML
+    private Label destinationErrorLabel;
+
+    @FXML
+    private Label dateErrorLabel;
+
+    @FXML
+    private Label passengerErrorLabel;
+
+    @FXML
+    private Label classErrorLabel;
+
     // --- A rádiógombok és a csoport ---
     @FXML
     private ToggleGroup classToggleGroup;
@@ -135,20 +151,48 @@ public class TicketBookingController implements ModelAware {
         if (departureComboBox != null) {
             departureComboBox.getSelectionModel().clearSelection();
             departureComboBox.setValue(null);
+            departureComboBox.setStyle("");
         }
+        if (departureErrorLabel != null) {
+            departureErrorLabel.setVisible(false);
+            departureErrorLabel.setManaged(false);
+        }
+
         if (destinationComboBox != null) {
             destinationComboBox.getSelectionModel().clearSelection();
             destinationComboBox.setValue(null);
+            destinationComboBox.setStyle("");
         }
+        if (destinationErrorLabel != null) {
+            destinationErrorLabel.setVisible(false);
+            destinationErrorLabel.setManaged(false);
+        }
+
         if (passengerTypeComboBox != null) {
             passengerTypeComboBox.getSelectionModel().clearSelection();
             passengerTypeComboBox.setValue(null);
+            passengerTypeComboBox.setStyle("");
         }
+        if (passengerErrorLabel != null) {
+            passengerErrorLabel.setVisible(false);
+            passengerErrorLabel.setManaged(false);
+        }
+
         if (flightDatePicker != null) {
             flightDatePicker.setValue(LocalDate.now()); // Vagy null, ha teljesen üresen szeretnéd: flightDatePicker.setValue(null);
+            flightDatePicker.setStyle("");
         }
+        if (dateErrorLabel != null) {
+            dateErrorLabel.setVisible(false);
+            dateErrorLabel.setManaged(false);
+        }
+
         if (classToggleGroup != null && classToggleGroup.getSelectedToggle() != null) {
             classToggleGroup.getSelectedToggle().setSelected(false);
+        }
+        if (classErrorLabel != null) {
+            classErrorLabel.setVisible(false);
+            classErrorLabel.setManaged(false);
         }
 
         System.out.println("Mezők alaphelyzetbe állítva."); // Megjegyzés: a System.out-hoz igazítva
@@ -157,14 +201,92 @@ public class TicketBookingController implements ModelAware {
     // --- Járatok keresése gomb eseménykezelője ---
     @FXML
     private void handleSearchFlights() throws IOException {
-        // --- Mezők validálása a továbblépés előtt ---
-        if (departureComboBox == null || departureComboBox.getValue() == null || departureComboBox.getValue().trim().isEmpty() ||
-                destinationComboBox == null || destinationComboBox.getValue() == null || destinationComboBox.getValue().trim().isEmpty() ||
-                flightDatePicker == null || flightDatePicker.getValue() == null ||
-                passengerTypeComboBox == null || passengerTypeComboBox.getValue() == null || passengerTypeComboBox.getValue().trim().isEmpty() ||
-                classToggleGroup == null || classToggleGroup.getSelectedToggle() == null) {
+        boolean isValid = true;
 
-            System.out.println("Kérjük, töltsön ki minden mezőt és válasszon kabin osztályt a továbblépéshez!");
+        // --- Mezők validálása a továbblépés előtt ---
+        if (departureComboBox == null || departureComboBox.getValue() == null || departureComboBox.getValue().trim().isEmpty()) {
+            if (departureComboBox != null) {
+                departureComboBox.setStyle("-fx-background-color: #fff0f0; -fx-border-color: #ff4d4d; -fx-border-width: 1.5px; -fx-border-radius: 4px;");
+            }
+            if (departureErrorLabel != null) {
+                departureErrorLabel.setVisible(true);
+                departureErrorLabel.setManaged(true);
+            }
+            isValid = false;
+        } else {
+            departureComboBox.setStyle("");
+            if (departureErrorLabel != null) {
+                departureErrorLabel.setVisible(false);
+                departureErrorLabel.setManaged(false);
+            }
+        }
+
+        if (destinationComboBox == null || destinationComboBox.getValue() == null || destinationComboBox.getValue().trim().isEmpty()) {
+            if (destinationComboBox != null) {
+                destinationComboBox.setStyle("-fx-background-color: #fff0f0; -fx-border-color: #ff4d4d; -fx-border-width: 1.5px; -fx-border-radius: 4px;");
+            }
+            if (destinationErrorLabel != null) {
+                destinationErrorLabel.setVisible(true);
+                destinationErrorLabel.setManaged(true);
+            }
+            isValid = false;
+        } else {
+            destinationComboBox.setStyle("");
+            if (destinationErrorLabel != null) {
+                destinationErrorLabel.setVisible(false);
+                destinationErrorLabel.setManaged(false);
+            }
+        }
+
+        if (flightDatePicker == null || flightDatePicker.getValue() == null) {
+            if (flightDatePicker != null) {
+                flightDatePicker.setStyle("-fx-background-color: #fff0f0; -fx-border-color: #ff4d4d; -fx-border-width: 1.5px; -fx-border-radius: 4px;");
+            }
+            if (dateErrorLabel != null) {
+                dateErrorLabel.setVisible(true);
+                dateErrorLabel.setManaged(true);
+            }
+            isValid = false;
+        } else {
+            flightDatePicker.setStyle("");
+            if (dateErrorLabel != null) {
+                dateErrorLabel.setVisible(false);
+                dateErrorLabel.setManaged(false);
+            }
+        }
+
+        if (passengerTypeComboBox == null || passengerTypeComboBox.getValue() == null || passengerTypeComboBox.getValue().trim().isEmpty()) {
+            if (passengerTypeComboBox != null) {
+                passengerTypeComboBox.setStyle("-fx-background-color: #fff0f0; -fx-border-color: #ff4d4d; -fx-border-width: 1.5px; -fx-border-radius: 4px;");
+            }
+            if (passengerErrorLabel != null) {
+                passengerErrorLabel.setVisible(true);
+                passengerErrorLabel.setManaged(true);
+            }
+            isValid = false;
+        } else {
+            passengerTypeComboBox.setStyle("");
+            if (passengerErrorLabel != null) {
+                passengerErrorLabel.setVisible(false);
+                passengerErrorLabel.setManaged(false);
+            }
+        }
+
+        if (classToggleGroup == null || classToggleGroup.getSelectedToggle() == null) {
+            if (classErrorLabel != null) {
+                classErrorLabel.setVisible(true);
+                classErrorLabel.setManaged(true);
+            }
+            isValid = false;
+        } else {
+            if (classErrorLabel != null) {
+                classErrorLabel.setVisible(false);
+                classErrorLabel.setManaged(false);
+            }
+        }
+
+        if (!isValid) {
+            System.out.println("Kérjük, töltsön ki minden kötelező mezőt és válasszon kabin osztályt a továbblépéshez!");
             // TODO szebb hiba kiírás
             return;
         }
