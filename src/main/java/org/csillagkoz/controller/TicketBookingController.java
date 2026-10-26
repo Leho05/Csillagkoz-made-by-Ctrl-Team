@@ -157,6 +157,18 @@ public class TicketBookingController implements ModelAware {
     // --- Járatok keresése gomb eseménykezelője ---
     @FXML
     private void handleSearchFlights() throws IOException {
+        // --- Mezők validálása a továbblépés előtt ---
+        if (departureComboBox == null || departureComboBox.getValue() == null || departureComboBox.getValue().trim().isEmpty() ||
+                destinationComboBox == null || destinationComboBox.getValue() == null || destinationComboBox.getValue().trim().isEmpty() ||
+                flightDatePicker == null || flightDatePicker.getValue() == null ||
+                passengerTypeComboBox == null || passengerTypeComboBox.getValue() == null || passengerTypeComboBox.getValue().trim().isEmpty() ||
+                classToggleGroup == null || classToggleGroup.getSelectedToggle() == null) {
+
+            System.out.println("Kérjük, töltsön ki minden mezőt és válasszon kabin osztályt a továbblépéshez!");
+            // TODO szebb hiba kiírás
+            return;
+        }
+
         if (model != null) {
             if (departureComboBox != null) model.setDeparture(departureComboBox.getValue());
             if (destinationComboBox != null) model.setDestination(destinationComboBox.getValue());
