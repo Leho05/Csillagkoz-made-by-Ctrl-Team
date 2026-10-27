@@ -196,7 +196,7 @@ public class PersonalDataController implements ModelAware {
             hasError = true;
         }
 
-        // 2. Ellenőrzés: Elmúlt-e 18 éves?
+        // 2. Ellenőrzés: Elmúlt-e 18 éves? (Csak akkor vizsgáljuk, ha nem üres a dátum)
         if (birthDatePicker != null && birthDatePicker.getValue() != null) {
             LocalDate birthDate = birthDatePicker.getValue();
             int age = Period.between(birthDate, LocalDate.now()).getYears();
@@ -209,48 +209,52 @@ public class PersonalDataController implements ModelAware {
             }
         }
 
-        // 3. Ellenőrzés: E-mail cím formátuma
+        // 3. Ellenőrzés: E-mail cím formátuma (csak ha nem üres)
         if (emailField != null && emailField.getText() != null && !emailField.getText().trim().isEmpty()) {
             String email = emailField.getText().trim();
             long atCount = email.chars().filter(ch -> ch == '@').count();
             if (atCount != 1 || !email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
-                setError(emailField, emailErrorLabel, "Helytelen formátum!");
+                setError(emailField, emailErrorLabel, "Helytelen formátum! (Pl. nev@domain.com)");
                 System.out.println("Hibás e-mail! Kérjük, érvényes e-mail címet adjon meg (pl. nev@domain.com)!");
                 // TODO szebb hiba kiírás
                 hasError = true;
             }
         }
 
-        // 4. Ellenőrzés: Telefonszám (+CC... vagy 06...)
+        // 4. Ellenőrzés: Telefonszám (+CC... vagy 06...) (csak ha nem üres)
         if (phoneField != null && phoneField.getText() != null && !phoneField.getText().trim().isEmpty()) {
             String phone = phoneField.getText().trim();
             if (!phone.matches("^(\\+\\d{8,15}|0\\d{8,14})$")) {
-                setError(phoneField, phoneErrorLabel, "Helytelen formátum!");
+                setError(phoneField, phoneErrorLabel, "Helytelen formátum! (Pl. +36301234567)");
                 System.out.println("Hiba: Érvénytelen telefonszám! Elvárt formátum: nemzetközi (+ és országhívó) vagy belföldi (0-val kezdődő) számjegyek.");
                 // TODO szebb hiba kiírás
                 hasError = true;
             }
         }
 
-        // 5. Ellenőrzés: Útlevél / Személyi igazolvány száma
+        // 5. Ellenőrzés: Útlevél / Személyi igazolvány száma (csak ha nem üres)
         if (passportField != null && passportField.getText() != null && !passportField.getText().trim().isEmpty()) {
             String passport = passportField.getText().trim().toUpperCase();
             boolean isValidId = false;
+            String expectedPatternMsg = "";
 
             if ("PASSPORT".equals(selectedIdType)) {
                 isValidId = passport.matches("^[A-Z]{2}[0-9]{6}$");
+                expectedPatternMsg = "Helytelen formátum! (Pl. AB123456)";
             } else {
                 isValidId = passport.matches("^[0-9]{6}[A-Z]{2}$");
+                expectedPatternMsg = "Helytelen formátum! (Pl. 123456AB)";
             }
 
             if (!isValidId) {
-                setError(passportField, passportErrorLabel, "Helytelen formátum!");
+                setError(passportField, passportErrorLabel, expectedPatternMsg);
                 System.out.println("Hiba: Érvénytelen útlevél/személyi igazolvány szám! Csak betűket és számokat tartalmazhat (6-10 karakter).");
                 // TODO szebb hiba kiírás
                 hasError = true;
             }
         }
 
+        // Ha bármilyen hiba van, itt állunk meg egyszerre, kiírva az összeset a mezőkhöz
         if (hasError) {
             System.out.println("Hiba: Kérjük, javítsa a hibásan kitöltött mezőket a továbblépéshez!");
             return;
