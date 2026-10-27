@@ -196,6 +196,51 @@ public class PersonalDataController implements ModelAware {
             hasError = true;
         }
 
+        // Segédfüggvény a név formátum ellenőrzésére (minden szó nagybetűvel kezdődik, a többi kisbetű, támogatja a szóközt és kötőjelet is)
+        java.util.function.Predicate<String> isValidNameFormat = name -> {
+            if (name == null || name.trim().isEmpty()) return false;
+            String trimmed = name.trim();
+            // Csak betűket, szóközt és kötőjelet tartalmazhat
+            if (!trimmed.matches("^[\\p{L}\\s-]+$")) return false;
+
+            // Szavakra bontjuk (szóköz vagy kötőjel mentén)
+            String[] words = trimmed.split("[\\s-]+");
+            for (String word : words) {
+                if (word.isEmpty()) continue;
+                // Az első betűnek nagybetűnek kell lennie
+                if (!Character.isUpperCase(word.charAt(0))) {
+                    return false;
+                }
+                // A többi betűnek kisbetűnek kell lennie
+                for (int i = 1; i < word.length(); i++) {
+                    if (!Character.isLowerCase(word.charAt(i))) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        };
+
+        // Vezetéknév formátum ellenőrzése
+        if (lastNameField != null && lastNameField.getText() != null && !lastNameField.getText().trim().isEmpty()) {
+            if (!isValidNameFormat.test(lastNameField.getText())) {
+                setError(lastNameField, lastNameErrorLabel, "Helytelen formátum!");
+                System.out.println("Hiba: Érvénytelen vezetéknév formátum!");
+                // TODO szebb hiba kiírás
+                hasError = true;
+            }
+        }
+
+        // Keresztnév formátum ellenőrzése
+        if (firstNameField != null && firstNameField.getText() != null && !firstNameField.getText().trim().isEmpty()) {
+            if (!isValidNameFormat.test(firstNameField.getText())) {
+                setError(firstNameField, firstNameErrorLabel, "Helytelen formátum!");
+                System.out.println("Hiba: Érvénytelen keresztnév formátum!");
+                // TODO szebb hiba kiírás
+                hasError = true;
+            }
+        }
+
         // 2. Ellenőrzés: Elmúlt-e 18 éves? (Csak akkor vizsgáljuk, ha nem üres a dátum)
         if (birthDatePicker != null && birthDatePicker.getValue() != null) {
             LocalDate birthDate = birthDatePicker.getValue();
@@ -214,7 +259,7 @@ public class PersonalDataController implements ModelAware {
             String email = emailField.getText().trim();
             long atCount = email.chars().filter(ch -> ch == '@').count();
             if (atCount != 1 || !email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
-                setError(emailField, emailErrorLabel, "Helytelen formátum! (Pl. nev@domain.com)");
+                setError(emailField, emailErrorLabel, "Helytelen formátum!");
                 System.out.println("Hibás e-mail! Kérjük, érvényes e-mail címet adjon meg (pl. nev@domain.com)!");
                 // TODO szebb hiba kiírás
                 hasError = true;
@@ -225,7 +270,7 @@ public class PersonalDataController implements ModelAware {
         if (phoneField != null && phoneField.getText() != null && !phoneField.getText().trim().isEmpty()) {
             String phone = phoneField.getText().trim();
             if (!phone.matches("^(\\+\\d{8,15}|0\\d{8,14})$")) {
-                setError(phoneField, phoneErrorLabel, "Helytelen formátum! (Pl. +36301234567)");
+                setError(phoneField, phoneErrorLabel, "Helytelen formátum!");
                 System.out.println("Hiba: Érvénytelen telefonszám! Elvárt formátum: nemzetközi (+ és országhívó) vagy belföldi (0-val kezdődő) számjegyek.");
                 // TODO szebb hiba kiírás
                 hasError = true;
@@ -236,18 +281,15 @@ public class PersonalDataController implements ModelAware {
         if (passportField != null && passportField.getText() != null && !passportField.getText().trim().isEmpty()) {
             String passport = passportField.getText().trim().toUpperCase();
             boolean isValidId = false;
-            String expectedPatternMsg = "";
 
             if ("PASSPORT".equals(selectedIdType)) {
                 isValidId = passport.matches("^[A-Z]{2}[0-9]{6}$");
-                expectedPatternMsg = "Helytelen formátum! (Pl. AB123456)";
             } else {
                 isValidId = passport.matches("^[0-9]{6}[A-Z]{2}$");
-                expectedPatternMsg = "Helytelen formátum! (Pl. 123456AB)";
             }
 
             if (!isValidId) {
-                setError(passportField, passportErrorLabel, expectedPatternMsg);
+                setError(passportField, passportErrorLabel, "Helytelen formátum!");
                 System.out.println("Hiba: Érvénytelen útlevél/személyi igazolvány szám! Csak betűket és számokat tartalmazhat (6-10 karakter).");
                 // TODO szebb hiba kiírás
                 hasError = true;
