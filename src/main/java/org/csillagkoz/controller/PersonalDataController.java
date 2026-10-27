@@ -2,6 +2,7 @@ package org.csillagkoz.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -69,6 +70,23 @@ public class PersonalDataController implements ModelAware {
     private Label phoneErrorLabel;
 
     @FXML
+    private void initialize() {
+        // Jövőbeni dátumok letiltása a naptárban (csak a mai nap és a múlt engedélyezett)
+        if (birthDatePicker != null) {
+            birthDatePicker.setDayCellFactory(picker -> new DateCell() {
+                @Override
+                public void updateItem(LocalDate date, boolean empty) {
+                    super.updateItem(date, empty);
+                    if (date.isAfter(LocalDate.now())) {
+                        setDisable(true);
+                        setStyle("-fx-background-color: #ffcccc;"); // Opcionálisan halvány pirosas hátteret is kaphatnak
+                    }
+                }
+            });
+        }
+    }
+
+    @FXML
     private void handleSelectPassport() {
         selectedIdType = "PASSPORT";
         passportTypeBtn.setStyle("-fx-background-color: #0056b3; -fx-text-fill: white;");
@@ -80,7 +98,7 @@ public class PersonalDataController implements ModelAware {
     private void handleSelectIdCard() {
         selectedIdType = "IDCARD";
         idCardTypeBtn.setStyle("-fx-background-color: #0056b3; -fx-text-fill: white;");
-        passportTypeBtn.setStyle("-fx-background-color: #e0e0e0; -fx-text-fill: black;");
+        passportTypeBtn.setStyle("-fx-background-color: #0056b3; -fx-text-fill: black;");
         passportField.setPromptText("Pl. 123456AB (6 szám, 2 betű)");
     }
 
