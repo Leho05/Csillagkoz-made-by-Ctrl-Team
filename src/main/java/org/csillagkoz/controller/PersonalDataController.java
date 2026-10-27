@@ -84,6 +84,39 @@ public class PersonalDataController implements ModelAware {
         passportField.setPromptText("Pl. 123456AB (6 szám, 2 betű)");
     }
 
+    private void clearErrors() {
+        String defaultStyle = "";
+        lastNameField.setStyle(defaultStyle);
+        lastNameErrorLabel.setVisible(false);
+
+        firstNameField.setStyle(defaultStyle);
+        firstNameErrorLabel.setVisible(false);
+
+        birthDatePicker.setStyle(defaultStyle);
+        birthDateErrorLabel.setVisible(false);
+
+        passportField.setStyle(defaultStyle);
+        passportErrorLabel.setVisible(false);
+
+        emailField.setStyle(defaultStyle);
+        emailErrorLabel.setVisible(false);
+
+        phoneField.setStyle(defaultStyle);
+        phoneErrorLabel.setVisible(false);
+    }
+
+    private void setError(TextField field, Label label, String message) {
+        field.setStyle("-fx-border-color: #ff4d4d; -fx-background-color: #fff0f0;");
+        label.setText(message);
+        label.setVisible(true);
+    }
+
+    private void setDatePickerError(DatePicker datePicker, Label label, String message) {
+        datePicker.setStyle("-fx-border-color: #ff4d4d; -fx-background-color: #fff0f0;");
+        label.setText(message);
+        label.setVisible(true);
+    }
+
     private void saveInputToModel() {
         if (model != null) {
             if (lastNameField != null && lastNameField.getText() != null) {
@@ -134,14 +167,36 @@ public class PersonalDataController implements ModelAware {
 
     @FXML
     private void handleFinalize() {
-        // 1. Ellenőrzés: Üresek-e a mezők?
-        if (lastNameField == null || lastNameField.getText().trim().isEmpty() ||
-                firstNameField == null || firstNameField.getText().trim().isEmpty() ||
-                birthDatePicker == null || birthDatePicker.getValue() == null ||
-                passportField == null || passportField.getText().trim().isEmpty() ||
-                emailField == null || emailField.getText().trim().isEmpty() ||
-                phoneField == null || phoneField.getText().trim().isEmpty()) {
+        clearErrors();
+        boolean hasEmptyError = false;
 
+        // 1. Ellenőrzés: Üresek-e a mezők?
+        if (lastNameField == null || lastNameField.getText().trim().isEmpty()) {
+            setError(lastNameField, lastNameErrorLabel, "* A mező kitöltése kötelező");
+            hasEmptyError = true;
+        }
+        if (firstNameField == null || firstNameField.getText().trim().isEmpty()) {
+            setError(firstNameField, firstNameErrorLabel, "* A mező kitöltése kötelező");
+            hasEmptyError = true;
+        }
+        if (birthDatePicker == null || birthDatePicker.getValue() == null) {
+            setDatePickerError(birthDatePicker, birthDateErrorLabel, "* A születési dátum megadása kötelező");
+            hasEmptyError = true;
+        }
+        if (passportField == null || passportField.getText().trim().isEmpty()) {
+            setError(passportField, passportErrorLabel, "* A mező kitöltése kötelező");
+            hasEmptyError = true;
+        }
+        if (emailField == null || emailField.getText().trim().isEmpty()) {
+            setError(emailField, emailErrorLabel, "* A mező kitöltése kötelező");
+            hasEmptyError = true;
+        }
+        if (phoneField == null || phoneField.getText().trim().isEmpty()) {
+            setError(phoneField, phoneErrorLabel, "* A mező kitöltése kötelező");
+            hasEmptyError = true;
+        }
+
+        if (hasEmptyError) {
             System.out.println("Hiba: Kérjük, töltsön ki minden mezőt a továbblépéshez!");
             // TODO szebb hiba kiírás
             return;
@@ -152,42 +207,8 @@ public class PersonalDataController implements ModelAware {
         int age = Period.between(birthDate, LocalDate.now()).getYears();
 
         if (age < 18) {
+            setDatePickerError(birthDatePicker, birthDateErrorLabel, "Hiba: Csak 18 év felett!");
             System.out.println("Hiba: A jegyvásárló nem múlt el 18 éves, a foglalás nem véglegesíthető!");
-            // TODO szebb hiba kiírás
-            return;
-        }
-
-        // 3. Ellenőrzés: E-mail cím formátuma (pontosan egy @ karakter)
-        String email = emailField.getText().trim();
-        long atCount = email.chars().filter(ch -> ch == '@').count();
-        if (atCount != 1 || !email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
-            System.out.println("Hibás e-mail! Kérjük, érvényes e-mail címet adjon meg (pl. nev@domain.com)!");
-            // TODO szebb hiba kiírás
-            return;
-        }
-
-        // 4. Ellenőrzés: Telefonszám (+CC... vagy 06...)
-        String phone = phoneField.getText().trim();
-
-        if (!phone.matches("^(\\+\\d{8,15}|0\\d{8,14})$")) {
-            System.out.println("Hiba: Érvénytelen telefonszám! Elvárt formátum: nemzetközi (+ és országhívó) vagy belföldi (0-val kezdődő) számjegyek.");
-            // TODO szebb hiba kiírás
-            return;
-        }
-
-        // 5. Ellenőrzés: Útlevél vagy Személyi igazolvány kiválasztott típus szerint
-        String passport = passportField.getText().trim().toUpperCase();
-        boolean isValidId = false;
-        if ("PASSPORT".equals(selectedIdType)) {
-            // Útlevél: 2 betű elöl, utána 6 számjegy (pl. AB123456)
-            isValidId = passport.matches("^[A-Z]{2}[0-9]{6}$");
-        } else {
-            // Személyi igazolvány: 6 számjegy elöl, utána 2 betű (pl. 123456AB)
-            isValidId = passport.matches("^[0-9]{6}[A-Z]{2}$");
-        }
-
-        if (!isValidId) {
-            System.out.println("Hiba: Érvénytelen okmányszám a kiválasztott típushoz!");
             // TODO szebb hiba kiírás
             return;
         }
