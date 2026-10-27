@@ -14,22 +14,50 @@
         <Label text="UTAS SZEMÉLYES ADATAI" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
         <Label text="Kérjük, adja meg a hivatalos úti okmány szerinti adatokat." style="-fx-text-fill: #666666;"/>
 
-        <Label text="Vezetéknév:"/>
+        <HBox spacing="10.0" alignment="CENTER_LEFT" maxWidth="300.0">
+            <Label text="Vezetéknév:"/>
+            <Label fx:id="lastNameErrorLabel" text="" style="-fx-text-fill: #ff4d4d; -fx-font-size: 11px;" visible="false"/>
+        </HBox>
         <TextField fx:id="lastNameField" promptText="Pl. Kovács" prefWidth="300.0" maxWidth="300.0"/>
 
-        <Label text="Keresztnév:"/>
+        <HBox spacing="10.0" alignment="CENTER_LEFT" maxWidth="300.0">
+            <Label text="Keresztnév:"/>
+            <Label fx:id="firstNameErrorLabel" text="" style="-fx-text-fill: #ff4d4d; -fx-font-size: 11px;" visible="false"/>
+        </HBox>
         <TextField fx:id="firstNameField" promptText="Pl. János" prefWidth="300.0" maxWidth="300.0"/>
 
-        <Label text="Születési dátum:"/>
+        <HBox spacing="10.0" alignment="CENTER_LEFT" maxWidth="300.0">
+            <Label text="Születési dátum:"/>
+            <Label fx:id="birthDateErrorLabel" text="" style="-fx-text-fill: #ff4d4d; -fx-font-size: 11px;" visible="false"/>
+        </HBox>
         <DatePicker fx:id="birthDatePicker" promptText="ÉÉÉÉ. HH. NN." prefWidth="300.0"/>
 
-        <Label text="Útlevél / Személyi igazolvány száma:"/>
-        <TextField fx:id="passportField" promptText="Pl. AB1234567" prefWidth="300.0" maxWidth="300.0"/>
+        <HBox spacing="10.0" alignment="CENTER_LEFT" maxWidth="300.0">
+            <Label text="Okmány típusa:"/>
+        </HBox>
+        <HBox spacing="10.0" alignment="CENTER_LEFT" maxWidth="300.0">
+            <children>
+                <Button fx:id="passportTypeBtn" text="Útlevél" prefWidth="145.0" onAction="#handleSelectPassport" style="-fx-background-color: #0056b3; -fx-text-fill: white;"/>
+                <Button fx:id="idCardTypeBtn" text="Személyi igazolvány" prefWidth="145.0" onAction="#handleSelectIdCard" style="-fx-background-color: #e0e0e0; -fx-text-fill: black;"/>
+            </children>
+        </HBox>
 
-        <Label text="E-mail cím:"/>
+        <HBox spacing="10.0" alignment="CENTER_LEFT" maxWidth="300.0">
+            <Label text="Okmány száma:"/>
+            <Label fx:id="passportErrorLabel" text="" style="-fx-text-fill: #ff4d4d; -fx-font-size: 11px;" visible="false"/>
+        </HBox>
+        <TextField fx:id="passportField" promptText="Pl. AB123456" prefWidth="300.0" maxWidth="300.0"/>
+
+        <HBox spacing="10.0" alignment="CENTER_LEFT" maxWidth="300.0">
+            <Label text="E-mail cím:"/>
+            <Label fx:id="emailErrorLabel" text="" style="-fx-text-fill: #ff4d4d; -fx-font-size: 11px;" visible="false"/>
+        </HBox>
         <TextField fx:id="emailField" promptText="pelda@email.com" prefWidth="300.0" maxWidth="300.0"/>
 
-        <Label text="Telefonszám:"/>
+        <HBox spacing="10.0" alignment="CENTER_LEFT" maxWidth="300.0">
+            <Label text="Telefonszám:"/>
+            <Label fx:id="phoneErrorLabel" text="" style="-fx-text-fill: #ff4d4d; -fx-font-size: 11px;" visible="false"/>
+        </HBox>
         <TextField fx:id="phoneField" promptText="+36 30 123 4567" prefWidth="300.0" maxWidth="300.0"/>
 
         <HBox alignment="CENTER" spacing="20.0" style="-fx-padding: 15 0 0 0;">
