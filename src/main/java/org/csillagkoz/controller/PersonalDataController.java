@@ -244,7 +244,7 @@ public class PersonalDataController implements ModelAware {
         // Vezetéknév formátum ellenőrzése
         if (lastNameField != null && lastNameField.getText() != null && !lastNameField.getText().trim().isEmpty()) {
             if (!isValidNameFormat.test(lastNameField.getText())) {
-                setError(lastNameField, lastNameErrorLabel, "Helytelen formátum!");
+                setError(lastNameField, lastNameErrorLabel, "Helytelen formátum! (Pl. Kovács)");
                 hasError = true;
             }
         }
@@ -252,7 +252,7 @@ public class PersonalDataController implements ModelAware {
         // Keresztnév formátum ellenőrzése
         if (firstNameField != null && firstNameField.getText() != null && !firstNameField.getText().trim().isEmpty()) {
             if (!isValidNameFormat.test(firstNameField.getText())) {
-                setError(firstNameField, firstNameErrorLabel, "Helytelen formátum!");
+                setError(firstNameField, firstNameErrorLabel, "Helytelen formátum! (Pl. János)");
                 hasError = true;
             }
         }
@@ -273,7 +273,7 @@ public class PersonalDataController implements ModelAware {
             String email = emailField.getText().trim();
             long atCount = email.chars().filter(ch -> ch == '@').count();
             if (atCount != 1 || !email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
-                setError(emailField, emailErrorLabel, "Helytelen formátum!");
+                setError(emailField, emailErrorLabel, "Helytelen formátum! (Pl. nev@domain.com)");
                 hasError = true;
             }
         }
@@ -282,7 +282,7 @@ public class PersonalDataController implements ModelAware {
         if (phoneField != null && phoneField.getText() != null && !phoneField.getText().trim().isEmpty()) {
             String phone = phoneField.getText().trim();
             if (!phone.matches("^(\\+\\d{8,15}|0\\d{8,14})$")) {
-                setError(phoneField, phoneErrorLabel, "Helytelen formátum!");
+                setError(phoneField, phoneErrorLabel, "Helytelen formátum! (Pl. +3630... vagy 0630...)");
                 hasError = true;
             }
         }
@@ -291,15 +291,18 @@ public class PersonalDataController implements ModelAware {
         if (passportField != null && passportField.getText() != null && !passportField.getText().trim().isEmpty()) {
             String passport = passportField.getText().trim().toUpperCase();
             boolean isValidId = false;
+            String expectedPatternMsg = "";
 
             if ("PASSPORT".equals(selectedIdType)) {
                 isValidId = passport.matches("^[A-Z]{2}[0-9]{6}$");
+                expectedPatternMsg = "Helytelen formátum! (Pl. AB123456)";
             } else {
                 isValidId = passport.matches("^[0-9]{6}[A-Z]{2}$");
+                expectedPatternMsg = "Helytelen formátum! (Pl. 123456AB)";
             }
 
             if (!isValidId) {
-                setError(passportField, passportErrorLabel, "Helytelen formátum!");
+                setError(passportField, passportErrorLabel, expectedPatternMsg);
                 hasError = true;
             }
         }
