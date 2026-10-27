@@ -140,7 +140,7 @@ public class TicketBookingController implements ModelAware {
                             super.updateItem(item, empty);
                             if (item.isBefore(LocalDate.now())) {
                                 setDisable(true);
-                                setStyle("-fx-background-color: #ffcccc;"); // Opcionális: halvány piros háttér a múltbeli napoknak
+                                setStyle("-fx-background-color: #ffcccc;"); // halvány piros háttér a múltbeli napoknak
                             }
                         }
                     };

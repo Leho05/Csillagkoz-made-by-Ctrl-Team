@@ -67,7 +67,7 @@
         </HBox>
         <VBox fx:id="radioContainer" spacing="5.0" prefWidth="300.0" maxWidth="300.0">
             <children>
-                <RadioButton fx:id="economyRadioButton" text="Turista / Harmad osztály (Economy)" toggleGroup="$classToggleGroup"/>
+                <RadioButton fx:id="economyRadioButton" text="Economy (Harmad osztály)" toggleGroup="$classToggleGroup"/>
                 <RadioButton fx:id="businessRadioButton" text="Business (Másod osztály)" toggleGroup="$classToggleGroup"/>
                 <RadioButton fx:id="firstClassRadioButton" text="First Class (Első osztály)" toggleGroup="$classToggleGroup"/>
             </children>
