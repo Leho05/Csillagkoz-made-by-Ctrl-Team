@@ -86,6 +86,7 @@ public class PersonalDataController implements ModelAware {
         }
     }
 
+    // Útlevél okmánytípus kiválasztása és a gombok állapotának/stílusának frissítése
     @FXML
     private void handleSelectPassport() {
         selectedIdType = "PASSPORT";
@@ -94,11 +95,12 @@ public class PersonalDataController implements ModelAware {
         passportField.setPromptText("Pl. AB123456 (2 betű, 6 szám)");
     }
 
+    // Személyi igazolvány okmánytípus kiválasztása és a gombok állapotának/stílusának frissítése
     @FXML
     private void handleSelectIdCard() {
         selectedIdType = "IDCARD";
         idCardTypeBtn.setStyle("-fx-background-color: #0056b3; -fx-text-fill: white;");
-        passportTypeBtn.setStyle("-fx-background-color: #0056b3; -fx-text-fill: black;");
+        passportTypeBtn.setStyle("-fx-background-color: #e0e0e0; -fx-text-fill: black;");
         passportField.setPromptText("Pl. 123456AB (6 szám, 2 betű)");
     }
 
@@ -243,8 +245,6 @@ public class PersonalDataController implements ModelAware {
         if (lastNameField != null && lastNameField.getText() != null && !lastNameField.getText().trim().isEmpty()) {
             if (!isValidNameFormat.test(lastNameField.getText())) {
                 setError(lastNameField, lastNameErrorLabel, "Helytelen formátum!");
-                System.out.println("Hiba: Érvénytelen vezetéknév formátum!");
-                // TODO szebb hiba kiírás
                 hasError = true;
             }
         }
@@ -253,8 +253,6 @@ public class PersonalDataController implements ModelAware {
         if (firstNameField != null && firstNameField.getText() != null && !firstNameField.getText().trim().isEmpty()) {
             if (!isValidNameFormat.test(firstNameField.getText())) {
                 setError(firstNameField, firstNameErrorLabel, "Helytelen formátum!");
-                System.out.println("Hiba: Érvénytelen keresztnév formátum!");
-                // TODO szebb hiba kiírás
                 hasError = true;
             }
         }
@@ -266,8 +264,6 @@ public class PersonalDataController implements ModelAware {
 
             if (age < 18) {
                 setDatePickerError(birthDatePicker, birthDateErrorLabel, "Hiba: Csak 18 év felett!");
-                System.out.println("Hiba: A jegyvásárló nem múlt el 18 éves, a foglalás nem véglegesíthető!");
-                // TODO szebb hiba kiírás
                 hasError = true;
             }
         }
@@ -278,8 +274,6 @@ public class PersonalDataController implements ModelAware {
             long atCount = email.chars().filter(ch -> ch == '@').count();
             if (atCount != 1 || !email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
                 setError(emailField, emailErrorLabel, "Helytelen formátum!");
-                System.out.println("Hibás e-mail! Kérjük, érvényes e-mail címet adjon meg (pl. nev@domain.com)!");
-                // TODO szebb hiba kiírás
                 hasError = true;
             }
         }
@@ -289,8 +283,6 @@ public class PersonalDataController implements ModelAware {
             String phone = phoneField.getText().trim();
             if (!phone.matches("^(\\+\\d{8,15}|0\\d{8,14})$")) {
                 setError(phoneField, phoneErrorLabel, "Helytelen formátum!");
-                System.out.println("Hiba: Érvénytelen telefonszám! Elvárt formátum: nemzetközi (+ és országhívó) vagy belföldi (0-val kezdődő) számjegyek.");
-                // TODO szebb hiba kiírás
                 hasError = true;
             }
         }
@@ -308,15 +300,12 @@ public class PersonalDataController implements ModelAware {
 
             if (!isValidId) {
                 setError(passportField, passportErrorLabel, "Helytelen formátum!");
-                System.out.println("Hiba: Érvénytelen útlevél/személyi igazolvány szám! Csak betűket és számokat tartalmazhat (6-10 karakter).");
-                // TODO szebb hiba kiírás
                 hasError = true;
             }
         }
 
         // Ha bármilyen hiba van, itt állunk meg egyszerre, kiírva az összeset a mezőkhöz
         if (hasError) {
-            System.out.println("Hiba: Kérjük, javítsa a hibásan kitöltött mezőket a továbblépéshez!");
             return;
         }
 
