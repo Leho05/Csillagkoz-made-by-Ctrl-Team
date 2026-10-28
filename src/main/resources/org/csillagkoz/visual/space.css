@@ -1,0 +1,80 @@
+.space-shell {
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 13px;
+    -fx-background-color: #050b17;
+    -fx-focus-color: #60d9e8;
+    -fx-faint-focus-color: rgba(96, 217, 232, .16);
+}
+.space-layout { -fx-background-color: linear-gradient(to bottom, rgba(5, 11, 23, .25), rgba(5, 11, 23, .68)); }
+.space-shell .label { -fx-text-fill: #e6eef8; }
+.space-header { -fx-border-color: transparent transparent rgba(125, 191, 220, .18) transparent; -fx-border-width: 1; }
+.space-header .brand { -fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #f1fbff; }
+.space-header .brand-subtitle { -fx-font-size: 9px; -fx-text-fill: #80b8ca; }
+.space-header .step-label { -fx-font-size: 11px; -fx-text-fill: #80b8ca; }
+.space-shell .button {
+    -fx-background-color: #17667e;
+    -fx-text-fill: white;
+    -fx-background-radius: 7;
+    -fx-padding: 9 12;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+}
+.space-shell .button:hover { -fx-background-color: #20829b; }
+.space-shell .button:focused { -fx-border-color: #7ee9f2; -fx-border-radius: 7; }
+.space-shell .motion-button {
+    -fx-background-color: rgba(20, 44, 66, .8);
+    -fx-border-color: rgba(110, 188, 214, .35);
+    -fx-border-radius: 7;
+    -fx-font-size: 11px;
+    -fx-font-weight: normal;
+    -fx-padding: 7 11;
+}
+.space-scroll, .space-scroll > .viewport { -fx-background-color: transparent; }
+.space-scroll { -fx-background-insets: 0; -fx-padding: 0; }
+.space-scroll > .corner { -fx-background-color: transparent; }
+.form-card {
+    -fx-background-color: rgba(10, 24, 43, .94);
+    -fx-background-radius: 18;
+    -fx-border-color: rgba(103, 171, 200, .40);
+    -fx-border-radius: 18;
+    -fx-padding: 2;
+}
+.space-form { -fx-background-color: #0a182b; -fx-background: #0a182b; }
+.form-card > .viewport { -fx-background-color: #0a182b; }
+.space-form .text-field, .space-form .combo-box-base {
+    -fx-background-color: #eef4fa;
+    -fx-background-radius: 6;
+    -fx-border-color: transparent;
+    -fx-border-radius: 6;
+    -fx-text-fill: #132b41;
+    -fx-prompt-text-fill: #61738a;
+    -fx-pref-height: 34;
+}
+.space-form .text-field:focused, .space-form .combo-box-base:focused { -fx-border-color: #61dce6; -fx-border-width: 1.5; }
+.space-form .combo-box-base .list-cell { -fx-text-fill: #132b41; }
+.space-form .date-picker .arrow-button { -fx-background-color: #d6e5ef; -fx-background-radius: 0 6 6 0; }
+.space-form .date-picker .arrow-button .arrow { -fx-background-color: #27546b; }
+.space-form .radio-button { -fx-text-fill: #dceaf7; -fx-padding: 3 0; }
+.space-form .radio-button .radio { -fx-background-color: #e0edf4; }
+.space-form .radio-button:selected .dot { -fx-background-color: #16758b; }
+.space-form #radioContainer:visual-error .radio-button { -fx-text-fill: #132b41; }
+.space-scroll .scroll-bar:vertical { -fx-background-color: transparent; -fx-pref-width: 8; }
+.space-scroll .scroll-bar .thumb { -fx-background-color: rgba(132, 179, 205, .42); -fx-background-radius: 5; }
+.space-scroll .scroll-bar .track, .space-scroll .scroll-bar .increment-button, .space-scroll .scroll-bar .decrement-button { -fx-background-color: transparent; }
+.space-scroll .scroll-bar .increment-arrow, .space-scroll .scroll-bar .decrement-arrow { -fx-background-color: transparent; -fx-padding: 0; }
+.space-shell .eyebrow { -fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #72d7e0; }
+.space-shell .illustration-title { -fx-font-size: 16px; -fx-font-weight: bold; -fx-text-alignment: center; -fx-text-fill: #eaf4ff; }
+.space-shell .footer-copy { -fx-font-size: 11px; -fx-text-fill: #9db6cb; }
+.ticket-preview {
+    -fx-background-color: linear-gradient(to bottom right, rgba(17, 49, 70, .96), rgba(8, 24, 42, .98));
+    -fx-background-radius: 14;
+    -fx-border-color: rgba(101, 214, 228, .6);
+    -fx-border-radius: 14;
+    -fx-border-width: 1;
+    -fx-max-width: 320;
+}
+.ticket-preview .ticket-title { -fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #edfbff; }
+.ticket-preview .ticket-route { -fx-font-size: 12px; -fx-text-fill: #a6d5e6; -fx-padding: 2 0 10 0; }
+.ticket-preview .ticket-caption { -fx-font-size: 9px; -fx-text-fill: #8cb5c6; }
+.ticket-preview .ticket-value { -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #eff9ff; }
+.ticket-preview .ticket-note { -fx-font-size: 10px; -fx-text-fill: #9ec2d1; }
