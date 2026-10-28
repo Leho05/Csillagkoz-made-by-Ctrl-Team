@@ -13,7 +13,7 @@ public final class SpaceTheme implements AutoCloseable {
     final SpaceAssets assets = new SpaceAssets();
     final BooleanProperty motion = new SimpleBooleanProperty(true);
     String passengerType;
-    String cabin = "ECONOMY";
+    String cabin;
     String departure;
     String destination;
     private final Stage stage;

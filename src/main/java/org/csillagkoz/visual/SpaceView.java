@@ -53,13 +53,13 @@ final class SpaceView extends StackPane implements AutoCloseable {
         } else if (personal) {
             ticket = new TicketPreview(original, theme);
             left.getChildren().add(ticket);
-            right.getChildren().add(illustration("UTASTÁRSAD", passengerCaption(theme.passengerType),
+            right.getChildren().add(illustration("Te:", "",
                     theme.assets.passenger(theme.passengerType), 210, 330));
         } else {
             left.getChildren().addAll(
                     illustration("KIVÁLASZTOTT KABIN", cabinCaption(theme.cabin), theme.assets.image("cabin." + theme.cabin), 230, 155),
                     illustration("ÚTI CÉL", display(theme.destination, "Válassz úti célt"), theme.assets.destination(theme.destination), 135, 135));
-            right.getChildren().add(illustration("UTASTÁRSAD", passengerCaption(theme.passengerType),
+            right.getChildren().add(illustration("Te:", "",
                     theme.assets.passenger(theme.passengerType), 190, 300));
         }
         ScrollPane leftScroll = scroll(left, false);
@@ -103,8 +103,8 @@ final class SpaceView extends StackPane implements AutoCloseable {
     private void setupBooking(Parent form, SpaceTheme theme, VBox left, VBox right) {
         Illustration departure = illustration("INDULÁS", "Válassz indulási helyet", theme.assets.destination(null), 185, 185);
         Illustration destination = illustration("ÉRKEZÉS", "Melyik világ vár rád?", theme.assets.destination(null), 185, 185);
-        Illustration passenger = illustration("UTASTÁRSAD", passengerCaption(theme.passengerType), theme.assets.passenger(theme.passengerType), 108, 150);
-        Illustration cabin = illustration("AZ UTAZÁSOD", "Válassz kabinosztályt", theme.assets.image("cabin.ECONOMY"), 205, 125);
+        Illustration passenger = illustration("Te:", "", theme.assets.passenger(theme.passengerType), 108, 150);
+        Illustration cabin = illustration("AZ UTAZÁSOD", "Válassz kabinosztályt", theme.assets.image("cabin.default"), 205, 125);
         departure.setId("visualDeparture"); destination.setId("visualDestination");
         route = new SpaceRoute(theme.assets.image("route"), departure.image, destination.image);
         passenger.setId("visualPassenger"); cabin.setId("visualCabin");
@@ -125,19 +125,22 @@ final class SpaceView extends StackPane implements AutoCloseable {
         });
         observe(type.valueProperty(), value -> {
             theme.passengerType = value;
-            passenger.update(theme.assets.passenger(value), passengerCaption(value));
+            passenger.update(theme.assets.passenger(value), "");
         });
         String[][] choices = {{"economyRadioButton", "ECONOMY"}, {"businessRadioButton", "BUSINESS"}, {"firstClassRadioButton", "FIRST_CLASS"}};
+        java.util.Map<javafx.scene.control.Toggle, String> cabinChoices = new java.util.HashMap<>();
+        javafx.scene.control.ToggleGroup cabinGroup = null;
         for (String[] choice : choices) {
             RadioButton button = find(form, choice[0], RadioButton.class);
             if (button == null) continue;
-            observe(button.selectedProperty(), selected -> {
-                if (selected) {
-                    theme.cabin = choice[1];
-                    cabin.update(theme.assets.image("cabin." + choice[1]), cabinCaption(choice[1]));
-                } else if (button.getToggleGroup() != null && button.getToggleGroup().getSelectedToggle() == null) {
-                    cabin.update(theme.assets.image("cabin.ECONOMY"), "Válassz kabinosztályt");
-                }
+            cabinChoices.put(button, choice[1]);
+            cabinGroup = button.getToggleGroup();
+        }
+        if (cabinGroup != null) {
+            observe(cabinGroup.selectedToggleProperty(), selected -> {
+                theme.cabin = cabinChoices.get(selected);
+                cabin.update(theme.assets.image("cabin." + (theme.cabin == null ? "default" : theme.cabin)),
+                        theme.cabin == null ? "Válassz kabinosztályt" : cabinCaption(theme.cabin));
             });
         }
     }
@@ -156,15 +159,6 @@ final class SpaceView extends StackPane implements AutoCloseable {
 
     private static String display(String value, String fallback) {
         return value == null || value.trim().isEmpty() ? fallback : value;
-    }
-
-    private static String passengerCaption(String value) {
-        switch (SpaceAssets.passengerKey(value)) {
-            case "alien.base": return "Válassz utastípust";
-            case "alien.young": return "Fiatal felfedező";
-            case "alien.senior": return "Tapasztalt utazó";
-            default: return "Felnőtt felfedező";
-        }
     }
 
     private static String cabinCaption(String cabin) {
@@ -262,9 +256,11 @@ final class SpaceView extends StackPane implements AutoCloseable {
     private static final class Illustration extends VBox {
         private final ImageView image;
         private final Label value;
+        private final String caption;
         private final double fullWidth, fullHeight;
         Illustration(String caption, String value, Image asset, double width, double height) {
             super(6);
+            this.caption = caption;
             setAlignment(Pos.CENTER);
             setPadding(new Insets(8));
             getStyleClass().add("illustration");
@@ -279,12 +275,14 @@ final class SpaceView extends StackPane implements AutoCloseable {
             this.value.setAlignment(Pos.CENTER);
             this.value.setMaxWidth(260);
             getChildren().addAll(heading, image, this.value);
-            setAccessibleText(caption + ": " + value);
+            update(asset, value);
         }
         void update(Image asset, String label) {
             image.setImage(asset);
             value.setText(label);
-            setAccessibleText(label);
+            value.setVisible(!label.isEmpty());
+            value.setManaged(!label.isEmpty());
+            setAccessibleText(label.isEmpty() ? caption : caption + ": " + label);
         }
         void setCompact(boolean compact) {
             image.setFitWidth(compact ? Math.min(fullWidth, 110) : fullWidth);

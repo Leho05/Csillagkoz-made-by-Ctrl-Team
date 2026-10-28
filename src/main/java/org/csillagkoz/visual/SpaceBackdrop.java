@@ -40,10 +40,10 @@ final class SpaceBackdrop extends Pane implements AutoCloseable {
         orbit(assets, "blackhole.1", .94, .38, .23, 27, 22, 9, .44);
         if (!quiet) orbit(assets, "blackhole.2", .03, .80, .14, 38, -8, -3, .34);
         // The third supplied black hole is intentionally not used: two keep the form legible.
-        fly(assets, "comet.1", 150, 0, 13, 2, 5, .72);
-        fly(assets, "comet.2", 125, 1, 17, 7, 6, .60);
-        fly(assets, "comet.3", 105, 2, 21, 12, 7, .65);
-        fly(assets, "flyby", 74, 3, 26, 8, 18, .70);
+        fly(assets, "comet.1", 150, 13, 1, .72, true);
+        fly(assets, "comet.2", 125, 17, 3, .60, true);
+        fly(assets, "comet.3", 105, 21, 5, .65, true);
+        fly(assets, "flyby", 74, 26, 2, .70, false);
     }
 
     private void orbit(SpaceAssets assets, String key, double x, double y, double ratio,
@@ -78,44 +78,102 @@ final class SpaceBackdrop extends Pane implements AutoCloseable {
         animations.add(motion);
     }
 
-    private void fly(SpaceAssets assets, String key, double width, int route,
-                     double travel, double delay, double rest, double opacity) {
+    private void fly(SpaceAssets assets, String key, double width,
+                     double travel, double delay, double opacity, boolean comet) {
         Image image = assets.image(key);
         if (image == null) return;
-        ImageView node = SpaceAssets.view(image, width, width / 2);
-        node.setOpacity(0);
-        getChildren().add(node);
+        FlightStream stream = new FlightStream(travel, comet, random);
+        ImageView[] nodes = new ImageView[FlightStream.CAPACITY];
+        for (int i = 0; i < nodes.length; i++) {
+            nodes[i] = SpaceAssets.view(image, width, width / 2);
+            nodes[i].setOpacity(0);
+            getChildren().add(nodes[i]);
+        }
+        // JavaFX's animation clock freezes while paused, including the spawn schedule.
         Transition movement = new Transition() {
-            private FlightPath path;
             private double lastFraction = -1;
-            private int direction = route;
-            { setCycleDuration(Duration.seconds(travel + rest)); setInterpolator(Interpolator.LINEAR); }
+            private double elapsedCycles;
+            { setCycleDuration(Duration.hours(1)); setInterpolator(Interpolator.LINEAR); }
             @Override protected void interpolate(double fraction) {
-                if (path == null || fraction < lastFraction) {
-                    if (path != null && route != 3) {
-                        // Pick a different direction once per cycle, never per frame.
-                        direction = (direction + 1 + random.nextInt(7)) % 8;
-                    }
-                    path = route == 3 ? new FlightPath(-1, .60, 2, .62)
-                            : FlightPath.comet(direction, random);
-                }
+                if (fraction < lastFraction) elapsedCycles += 3600;
                 lastFraction = fraction;
-                double t = Math.min(1, fraction * (travel + rest) / travel);
-                double padding = width + 80;
-                double x0 = FlightPath.coordinate(path.x0, getWidth(), padding);
-                double x1 = FlightPath.coordinate(path.x1, getWidth(), padding);
-                double y0 = FlightPath.coordinate(path.y0, getHeight(), padding);
-                double y1 = FlightPath.coordinate(path.y1, getHeight(), padding);
-                node.setLayoutX(x0 + (x1 - x0) * t);
-                node.setLayoutY(y0 + (y1 - y0) * t);
-                // The supplied sprites point left; orient their heads along the path.
-                node.setRotate(Math.toDegrees(Math.atan2(y1 - y0, x1 - x0)) - 180);
-                node.setOpacity(opacity * Math.max(0, Math.min(1, Math.min(t * 20, (1 - t) * 20))));
+                double now = elapsedCycles + fraction * 3600;
+                stream.advance(now);
+                for (int i = 0; i < nodes.length; i++) {
+                    Flight flight = stream.flights[i];
+                    ImageView node = nodes[i];
+                    if (flight == null || now >= flight.start + flight.duration) {
+                        node.setOpacity(0);
+                        continue;
+                    }
+                    FlightPath path = flight.path;
+                    double t = (now - flight.start) / flight.duration;
+                    double padding = width + 80;
+                    double x0 = FlightPath.coordinate(path.x0, getWidth(), padding);
+                    double x1 = FlightPath.coordinate(path.x1, getWidth(), padding);
+                    double y0 = FlightPath.coordinate(path.y0, getHeight(), padding);
+                    double y1 = FlightPath.coordinate(path.y1, getHeight(), padding);
+                    node.setLayoutX(x0 + (x1 - x0) * t);
+                    node.setLayoutY(y0 + (y1 - y0) * t);
+                    // The supplied sprites point left; orient their heads along the path.
+                    node.setRotate(Math.toDegrees(Math.atan2(y1 - y0, x1 - x0)) - 180);
+                    node.setOpacity(opacity * Math.max(0, Math.min(1, Math.min(t * 20, (1 - t) * 20))));
+                }
             }
         };
         movement.setDelay(Duration.seconds(delay));
         movement.setCycleCount(Animation.INDEFINITE);
         animations.add(movement);
+    }
+
+    /** Bounded, independently timed flights sharing one bitmap per sprite type. */
+    static final class FlightStream {
+        static final int CAPACITY = 4;
+        final Flight[] flights = new Flight[CAPACITY];
+        private final double baseDuration;
+        private final boolean comet;
+        private final Random random;
+        private double nextSpawn;
+        private int direction;
+
+        FlightStream(double baseDuration, boolean comet, Random random) {
+            this.baseDuration = baseDuration;
+            this.comet = comet;
+            this.random = random;
+            direction = random.nextInt(8);
+        }
+
+        void advance(double now) {
+            if (now < nextSpawn) return;
+            for (int i = 0; i < flights.length; i++) {
+                Flight previous = flights[i];
+                if (previous != null && now < previous.start + previous.duration) continue;
+                double multiplier = comet ? 1 + random.nextDouble() * 2 : 1;
+                double duration = baseDuration / multiplier;
+                FlightPath path;
+                if (comet) {
+                    direction = (direction + 1 + random.nextInt(7)) % 8;
+                    path = FlightPath.comet(direction, random);
+                } else {
+                    // Distinct heights keep overlapping ships apart without extra files.
+                    double y = .32 + random.nextDouble() * .48;
+                    path = new FlightPath(-1, y, 2, y + .03);
+                }
+                flights[i] = new Flight(now, duration, path);
+                nextSpawn = now + duration * (.38 + random.nextDouble() * .24);
+                return;
+            }
+            // Heavy overlap never allocates more nodes; retry when a slot can free up.
+            nextSpawn = now + .2;
+        }
+    }
+
+    static final class Flight {
+        final double start, duration;
+        final FlightPath path;
+        Flight(double start, double duration, FlightPath path) {
+            this.start = start; this.duration = duration; this.path = path;
+        }
     }
 
     @Override protected void layoutChildren() {
