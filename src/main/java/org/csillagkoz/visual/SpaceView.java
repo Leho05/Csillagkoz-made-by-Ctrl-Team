@@ -28,6 +28,7 @@ final class SpaceView extends StackPane implements AutoCloseable {
     private final SpaceBackdrop backdrop;
     private final List<Runnable> detach = new ArrayList<>();
     private TicketPreview ticket;
+    private SpaceRoute route;
 
     SpaceView(Parent original, SpaceTheme theme) {
         getStyleClass().add("space-shell");
@@ -65,7 +66,7 @@ final class SpaceView extends StackPane implements AutoCloseable {
         ScrollPane rightScroll = scroll(right, false);
         leftScroll.setId("visualLeftScroll");
         rightScroll.setId("visualRightScroll");
-        layout.setCenter(new Workspace(leftScroll, form, rightScroll));
+        layout.setCenter(new Workspace(leftScroll, form, rightScroll, route));
         Label footer = new Label(personal ? "A jegyelőnézet a kitöltés közben frissül." : "A következő állomás: egy új világ.");
         footer.getStyleClass().add("footer-copy");
         BorderPane.setAlignment(footer, Pos.CENTER);
@@ -105,6 +106,7 @@ final class SpaceView extends StackPane implements AutoCloseable {
         Illustration passenger = illustration("UTASTÁRSAD", passengerCaption(theme.passengerType), theme.assets.passenger(theme.passengerType), 108, 150);
         Illustration cabin = illustration("AZ UTAZÁSOD", "Válassz kabinosztályt", theme.assets.image("cabin.ECONOMY"), 205, 125);
         departure.setId("visualDeparture"); destination.setId("visualDestination");
+        route = new SpaceRoute(theme.assets.image("route"), departure.image, destination.image);
         passenger.setId("visualPassenger"); cabin.setId("visualCabin");
         left.getChildren().addAll(departure, passenger);
         right.getChildren().addAll(destination, cabin);
@@ -114,10 +116,12 @@ final class SpaceView extends StackPane implements AutoCloseable {
         observe(from.valueProperty(), value -> {
             theme.departure = value;
             departure.update(theme.assets.destination(value), display(value, "Válassz indulási helyet"));
+            updateRoute(theme);
         });
         observe(to.valueProperty(), value -> {
             theme.destination = value;
             destination.update(theme.assets.destination(value), display(value, "Melyik világ vár rád?"));
+            updateRoute(theme);
         });
         observe(type.valueProperty(), value -> {
             theme.passengerType = value;
@@ -138,6 +142,11 @@ final class SpaceView extends StackPane implements AutoCloseable {
         }
     }
 
+    private void updateRoute(SpaceTheme theme) {
+        route.setConnected(theme.departure != null && !theme.departure.trim().isEmpty()
+                && theme.destination != null && !theme.destination.trim().isEmpty());
+    }
+
     private <T> void observe(ObservableValue<T> property, java.util.function.Consumer<T> update) {
         ChangeListener<T> listener = (o, a, b) -> update.accept(b);
         property.addListener(listener);
@@ -151,6 +160,7 @@ final class SpaceView extends StackPane implements AutoCloseable {
 
     private static String passengerCaption(String value) {
         switch (SpaceAssets.passengerKey(value)) {
+            case "alien.base": return "Válassz utastípust";
             case "alien.young": return "Fiatal felfedező";
             case "alien.senior": return "Tapasztalt utazó";
             default: return "Felnőtt felfedező";
@@ -246,6 +256,7 @@ final class SpaceView extends StackPane implements AutoCloseable {
         backdrop.close();
         detach.forEach(Runnable::run);
         if (ticket != null) ticket.close();
+        if (route != null) route.close();
     }
 
     private static final class Illustration extends VBox {
@@ -284,9 +295,17 @@ final class SpaceView extends StackPane implements AutoCloseable {
     /** Three columns at 960 px and above; form above two scrollable previews below 860 px. */
     private static final class Workspace extends Region {
         private final Node left, centre, right;
+        private final SpaceRoute route;
         private Boolean compact;
-        Workspace(Node left, Node centre, Node right) {
+        private double routeWidth = -1, routeHeight = -1, routeInset;
+        Workspace(Node left, Node centre, Node right, SpaceRoute route) {
             this.left = left; this.centre = centre; this.right = right;
+            this.route = route;
+            if (route != null) {
+                getChildren().add(route);
+                ((VBox) ((ScrollPane) left).getContent()).setAlignment(Pos.TOP_CENTER);
+                ((VBox) ((ScrollPane) right).getContent()).setAlignment(Pos.TOP_CENTER);
+            }
             getChildren().addAll(left, centre, right);
         }
         @Override protected void layoutChildren() {
@@ -298,7 +317,8 @@ final class SpaceView extends StackPane implements AutoCloseable {
                 compactImages(right, narrow);
             }
             if (w >= 860) {
-                double centreWidth = Math.min(440, w * .435);
+                double centreWidth = route == null ? Math.min(440, w * .435)
+                        : Math.min(440, Math.max(350, w * .36));
                 double sideWidth = (w - centreWidth - 72) / 2;
                 left.resizeRelocate(16, 6, sideWidth, h - 12);
                 centre.resizeRelocate(sideWidth + 36, 6, centreWidth, h - 12);
@@ -308,6 +328,28 @@ final class SpaceView extends StackPane implements AutoCloseable {
                 centre.resizeRelocate(16, 4, w - 32, formHeight);
                 left.resizeRelocate(16, formHeight + 14, (w - 44) / 2, Math.max(80, h - formHeight - 20));
                 right.resizeRelocate(w / 2 + 6, formHeight + 14, (w - 44) / 2, Math.max(80, h - formHeight - 20));
+            }
+            if (route != null) {
+                route.resizeRelocate(0, 0, w, h);
+                // Resolve scroll-view content placement before measuring the planets.
+                ((ScrollPane) left).layout();
+                ((ScrollPane) right).layout();
+                if (routeWidth != w || routeHeight != h) {
+                    routeInset = narrow ? 0 : Math.max(0, routeInset + route.topCorrection());
+                    ((VBox) ((ScrollPane) left).getContent()).setPadding(new Insets(routeInset, 0, 0, 0));
+                    ((VBox) ((ScrollPane) right).getContent()).setPadding(new Insets(routeInset, 0, 0, 0));
+                    ((ScrollPane) left).layout();
+                    ((ScrollPane) right).layout();
+                    routeWidth = w; routeHeight = h;
+                }
+                route.requestLayout();
+                route.layout();
+                if (!narrow) {
+                    double centreWidth = Math.min(440, Math.max(350, w * .36));
+                    double centreX = (w - centreWidth) / 2;
+                    double top = Math.min(Math.max(6, h - 220), route.formTop(centreX, centreWidth));
+                    centre.resizeRelocate(centreX, top, centreWidth, Math.max(180, h - top - 6));
+                }
             }
         }
         @Override protected double computeMinWidth(double height) { return 0; }

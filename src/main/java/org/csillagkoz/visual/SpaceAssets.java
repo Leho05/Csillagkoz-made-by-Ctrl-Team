@@ -37,7 +37,7 @@ public final class SpaceAssets {
             absent.add(path);
             return null;
         }
-        double size = key.equals("background") ? 3840 : 640;
+        double size = key.equals("background") ? 3840 : key.equals("route") ? 1980 : 640;
         Image image = new Image(url.toExternalForm(), size, size, true, true, false);
         if (image.isError()) {
             absent.add(path);
@@ -58,6 +58,7 @@ public final class SpaceAssets {
 
     public static String passengerKey(String value) {
         String normalized = normalize(value);
+        if (normalized.isEmpty()) return "alien.base";
         if (normalized.contains("gyermek") || normalized.contains("diak")) return "alien.young";
         if (normalized.contains("nyugdijas")) return "alien.senior";
         return "alien.adult";

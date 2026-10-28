@@ -54,6 +54,26 @@
 .space-form .combo-box-base .list-cell { -fx-text-fill: #132b41; }
 .space-form .date-picker .arrow-button { -fx-background-color: #d6e5ef; -fx-background-radius: 0 6 6 0; }
 .space-form .date-picker .arrow-button .arrow { -fx-background-color: #27546b; }
+/* The popup inherits the form's theme, but its light header needs dark text
+   and compact spinner buttons rather than the main action-button styling. */
+.date-picker-popup > .month-year-pane { -fx-background-color: #e8f1f7; }
+.date-picker-popup .month-year-pane .label {
+    -fx-text-fill: #132b41;
+    -fx-opacity: 1;
+    -fx-font-size: 12px;
+}
+.date-picker-popup .spinner .button {
+    -fx-background-color: #d6e5ef;
+    -fx-background-radius: 4;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 4 6;
+    -fx-font-weight: normal;
+}
+.date-picker-popup .spinner .button:hover { -fx-background-color: #bdd9e7; }
+.date-picker-popup .spinner .button:focused { -fx-border-color: #16758b; -fx-border-width: 1; }
+.date-picker-popup .spinner .left-arrow,
+.date-picker-popup .spinner .right-arrow { -fx-background-color: #27546b; }
 .space-form .radio-button { -fx-text-fill: #dceaf7; -fx-padding: 3 0; }
 .space-form .radio-button .radio { -fx-background-color: #e0edf4; }
 .space-form .radio-button:selected .dot { -fx-background-color: #16758b; }
