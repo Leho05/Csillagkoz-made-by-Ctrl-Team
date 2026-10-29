@@ -130,7 +130,6 @@ public class TicketBookingController implements ModelAware {
         if (flightDatePicker != null) {
             flightDatePicker.setValue(LocalDate.now());
 
-            // --- Korábbi napok letiltása a naptárban ---
             flightDatePicker.setDayCellFactory(new Callback<DatePicker, DateCell>() {
                 @Override
                 public DateCell call(DatePicker param) {
@@ -183,7 +182,7 @@ public class TicketBookingController implements ModelAware {
         }
 
         if (flightDatePicker != null) {
-            flightDatePicker.setValue(LocalDate.now()); // Vagy null, ha teljesen üresen szeretnéd: flightDatePicker.setValue(null);
+            flightDatePicker.setValue(LocalDate.now());
             flightDatePicker.setStyle("");
         }
         if (dateErrorLabel != null) {
@@ -202,15 +201,41 @@ public class TicketBookingController implements ModelAware {
             classErrorLabel.setManaged(false);
         }
 
-        System.out.println("Mezők alaphelyzetbe állítva."); // Megjegyzés: a System.out-hoz igazítva
+        System.out.println("Mezők alaphelyzetbe állítva.");
     }
 
     // --- Járatok keresése gomb eseménykezelője ---
     @FXML
     private void handleSearchFlights() throws IOException {
+
+        // --- 1. Ellenőrzés: Az indulási hely és úticél nem egyezhet meg ---
+        if (departureComboBox != null && destinationComboBox != null &&
+                departureComboBox.getValue() != null && destinationComboBox.getValue() != null) {
+
+            // Megvizsgáljuk, hogy tartalmazza-e vagy megegyezik-e (pl. "Mars" benne van-e vagy pontos egyezés)
+            String dep = departureComboBox.getValue().toLowerCase();
+            String dest = destinationComboBox.getValue().toLowerCase();
+
+            if (dep.contains(dest) || dest.contains(dep)) {
+                destinationComboBox.setStyle("-fx-background-color: #fff0f0; -fx-border-color: #ff4d4d; -fx-border-width: 1.5px; -fx-border-radius: 4px;");
+                if (destinationErrorLabel != null) {
+                    destinationErrorLabel.setText("Az indulási hely és az úticél nem egyezhet meg!");
+                    destinationErrorLabel.setVisible(true);
+                    destinationErrorLabel.setManaged(true);
+                }
+                return; // Megállítjuk a folyamatot, nem engedjük tovább
+            } else {
+                destinationComboBox.setStyle("");
+                if (destinationErrorLabel != null) {
+                    destinationErrorLabel.setVisible(false);
+                    destinationErrorLabel.setManaged(false);
+                }
+            }
+        }
+
         boolean isValid = true;
 
-        // --- Mezők validálása a továbblépés előtt ---
+        // --- Alapvető mezők validálása a továbblépés előtt ---
         if (departureComboBox == null || departureComboBox.getValue() == null || departureComboBox.getValue().trim().isEmpty()) {
             if (departureComboBox != null) {
                 departureComboBox.setStyle("-fx-background-color: #fff0f0; -fx-border-color: #ff4d4d; -fx-border-width: 1.5px; -fx-border-radius: 4px;");
@@ -238,10 +263,9 @@ public class TicketBookingController implements ModelAware {
             }
             isValid = false;
         } else {
-            destinationComboBox.setStyle("");
-            if (destinationErrorLabel != null) {
-                destinationErrorLabel.setVisible(false);
-                destinationErrorLabel.setManaged(false);
+            // Itt ne töröljük ki a stílust feltétel nélkül, ha az előbbi útvonalhiba miatt lett piros, de ha rendben van, oké
+            if (destinationErrorLabel == null || !destinationErrorLabel.isVisible()) {
+                destinationComboBox.setStyle("");
             }
         }
 
