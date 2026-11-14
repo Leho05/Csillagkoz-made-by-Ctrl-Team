@@ -79,7 +79,7 @@ public class LoginController {
     // 3. Ha NEM akar bejelentkezni (Vendég mód)
     @FXML
     private void handleGuestContinue() {
-        SessionManager.logout(); // Biztosítjuk, hogy nincs senki belépve (null)
+        SessionManager.logout(); // nincs senki belépve
         goToMainPage();
     }
 
