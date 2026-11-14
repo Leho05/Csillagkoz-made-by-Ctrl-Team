@@ -8,6 +8,7 @@ import org.csillagkoz.App;
 import org.csillagkoz.model.BookingModel;
 import org.csillagkoz.database.FlightDao;
 import org.csillagkoz.model.Flight;
+import org.csillagkoz.service.SessionManager;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -53,6 +54,16 @@ public class TicketBookingController implements ModelAware {
                     }
                 }
             }
+        }
+    }
+    @FXML
+    private void handleBackToLogin() {
+        try {
+            SessionManager.logout(); // Kijelentkeztetjük az esetlegesen belépett felhasználót
+            App.setRoot("login", "Csillagköz - Bejelentkezés");
+        } catch (IOException e) {
+            System.err.println("Hiba a bejelentkező ablak betöltésekor: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

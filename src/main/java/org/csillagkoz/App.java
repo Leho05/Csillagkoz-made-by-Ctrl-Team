@@ -26,9 +26,9 @@ public class App extends Application {
         primaryStage = stage;
         model = new BookingModel();
 
-        scene = new Scene(loadFXML("ticket-booking"), 960, 600);
+        scene = new Scene(loadFXML("login"), 960, 600);
 
-        stage.setTitle("Csillagköz - Jegyfoglalás");
+        stage.setTitle("Csillagköz - Bejelentkezés");
         stage.setScene(scene);
         stage.show();
     }

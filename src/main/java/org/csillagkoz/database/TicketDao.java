@@ -9,11 +9,11 @@ import java.sql.SQLException;
 public class TicketDao {
 
     // Új jegy elmentése
-    public void saveTicket(Ticket ticket) throws SQLException {
+    public void saveTicket(Connection conn, Ticket ticket) throws SQLException {
         String sql = "INSERT INTO tickets (ticket_id, flight_id, galactic_id, travel_class, final_price, booking_date) "
                 + "VALUES (?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = Database.getConnection();
+        try (
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, ticket.getTicketId());

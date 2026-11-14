@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER" spacing="15.0" prefHeight="600.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.csillagkoz.controller.LoginController">
+    <padding>
+        <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
+    </padding>
+
+    <Label text="Üdvözöljük a Csillagköz Rendszerében!">
+        <font>
+            <Font name="System Bold" size="24.0" />
+        </font>
+    </Label>
+
+    <Label text="Jelentkezzen be, vagy folytassa vendégként a jegyfoglalást." />
+
+    <VBox alignment="CENTER" maxWidth="300.0" spacing="10.0">
+        <TextField fx:id="usernameField" promptText="Felhasználónév (pl. admin vagy utas)" />
+        <PasswordField fx:id="passwordField" promptText="Jelszó (pl. admin123)" />
+
+        <Label fx:id="errorLabel" textFill="RED" visible="false" wrapText="true" />
+
+        <Button onAction="#handleLogin" maxWidth="Infinity" text="Bejelentkezés" style="-fx-font-weight: bold;" />
+        <Button onAction="#handleRegister" maxWidth="Infinity" text="Regisztráció (Új fiók)" />
+
+        <Separator prefWidth="200.0">
+            <VBox.margin>
+                <Insets bottom="10.0" top="10.0" />
+            </VBox.margin>
+        </Separator>
+
+        <Button onAction="#handleGuestContinue" maxWidth="Infinity" text="Folytatás bejelentkezés nélkül (Vendég)" />
+    </VBox>
+</VBox>

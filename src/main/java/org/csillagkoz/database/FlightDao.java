@@ -65,10 +65,10 @@ public class FlightDao {
     }
 
     // Szabad helyek és státusz frissítése jegyvásárlás után
-    public void updateSeats(Flight flight) throws SQLException {
+    public void updateSeats(Connection conn,Flight flight) throws SQLException {
         String sql = "UPDATE flights SET available_seats = ?, status = ? WHERE flight_id = ?";
 
-        try (Connection conn = Database.getConnection();
+        try (
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, flight.getAvailableSeats());

@@ -10,13 +10,13 @@ import java.sql.SQLException;
 public class PassengerDao {
 
     // Utas mentése vagy frissítése (ha már létezik a galacticId)
-    public void saveOrUpdatePassenger(Passenger passenger) throws SQLException {
+    public void saveOrUpdatePassenger(Connection conn, Passenger passenger) throws SQLException {
         String sql = "INSERT INTO passengers (galactic_id, name, age, health_certificate) "
                 + "VALUES (?, ?, ?, ?) "
                 + "ON CONFLICT(galactic_id) DO UPDATE SET "
                 + "name = excluded.name, age = excluded.age, health_certificate = excluded.health_certificate";
 
-        try (Connection conn = Database.getConnection();
+        try (
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, passenger.getGalacticId());
