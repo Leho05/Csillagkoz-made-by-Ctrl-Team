@@ -323,11 +323,29 @@ public class PersonalDataController implements ModelAware {
             System.out.println("Telefon szám: " + model.getPhone());
             System.out.println("Úti cél: " + model.getDestination() + " (" + model.getSelectedClass() + ")");
         }
+        double basePrice = 150000; // Alapár (ha a modellben nincs külön Flight objektum)
+        if (model != null && model.getSelectedClass() != null) {
+            switch (model.getSelectedClass().toUpperCase()) {
+                case "BUSINESS":
+                case "MÁSOD OSZTÁLY":
+                    basePrice *= 1.5;
+                    break;
+                case "FIRST_CLASS":
+                case "FIRST CLASS":
+                case "ELSŐ OSZTÁLY":
+                    basePrice *= 2.5;
+                    break;
+            }
+        }
+        PaymentController.currentAmountToPay = basePrice;
 
-        // GUI ablak bezárása
-        Stage stage = (Stage) lastNameField.getScene().getWindow();
-        if (stage != null) {
-            stage.close();
+        // Átirányítás a fizetési ablakra
+        try {
+            App.setRoot("payment", "Csillagköz - Fizetés");
+        } catch (IOException e)
+        {
+            System.err.println("Hiba a fizetési ablak betöltésekor: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }
