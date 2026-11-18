@@ -57,6 +57,7 @@ public class FlightDao {
                         LocalDateTime.parse(rs.getString("booking_deadline")),
                         rs.getInt("max_capacity")
                 );
+                flight.setAvailableSeats(rs.getInt("available_seats"));
                 flight.setStatus(rs.getString("status"));
                 flights.add(flight);
             }

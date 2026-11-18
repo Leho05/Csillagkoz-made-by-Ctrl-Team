@@ -19,6 +19,14 @@ public class TicketBookingController implements ModelAware {
 
     private BookingModel model;
 
+    @FXML
+    private void handleOpenAdmin() {
+        try {
+            App.setRoot("admin", "Csillagköz - Adminisztráció");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     @Override
     public void setModel(BookingModel model) {
         this.model = model;
@@ -71,6 +79,9 @@ public class TicketBookingController implements ModelAware {
     private ComboBox<String> departureComboBox;
 
     @FXML
+    private Button adminButton;
+
+    @FXML
     private ComboBox<String> destinationComboBox;
 
     @FXML
@@ -114,6 +125,11 @@ public class TicketBookingController implements ModelAware {
     private final FlightDao flightDao = new FlightDao();
 
     public void initialize() {
+        if (adminButton != null) {
+            boolean isAdmin = SessionManager.isAdmin();
+            adminButton.setVisible(isAdmin);
+            adminButton.setManaged(isAdmin); // Ha nem admin, a helyet sem foglalja a képernyőn
+        }
         // --- ComboBoxok feltöltése ---
         if (departureComboBox != null) {
             departureComboBox.getItems().addAll("Föld (Terra Központ)", "Hold (Luna Bázis)", "Mars Kolónia Alpha");

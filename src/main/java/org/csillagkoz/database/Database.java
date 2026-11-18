@@ -85,7 +85,7 @@ public class Database {
                         + "('MOON-2026-03', 'Copernicus Űrkikötő', 'MOON', 70000, '2026-11-25T09:00', '2026-11-23T09:00', 60, 60, 'FOGLALHATÓ'), "
                         + "('TITAN-2026-01', 'Titan Kutatóállomás', 'MOON', 320000, '2026-12-01T10:00', '2026-11-28T10:00', 30, 30, 'FOGLALHATÓ'), "
                         + "('EUROPA-2026-01', 'Europa Óceánbázis', 'MOON', 290000, '2026-12-15T09:15', '2026-12-12T09:15', 30, 30, 'FOGLALHATÓ'), "
-                        + "('VENUS-2026-01', 'Vénusz Felhőváros', 'PLANET', 210000, '2026-10-15T06:00', '2026-10-13T06:00', 25, 25, 'LEZÁRT'), "
+                        + "('VENUS-2026-01', 'Vénusz Felhőváros', 'PLANET', 210000, '2026-10-15T06:00', '2026-10-13T06:00', 25, 25, 'FOGLALHATÓ'), "
                         + "('CERES-2026-01', 'Ceres Bányaközpont', 'PLANET', 140000, '2026-11-20T12:00', '2026-11-18T12:00', 20, 20, 'FOGLALHATÓ'), "
                         + "('VESTA-2026-01', 'Vesta Kutatóállomás', 'PLANET', 155000, '2026-11-28T15:30', '2026-11-26T15:30', 20, 20, 'FOGLALHATÓ');";
                 String insertUsers = "INSERT OR IGNORE INTO users (username, password, role) VALUES "

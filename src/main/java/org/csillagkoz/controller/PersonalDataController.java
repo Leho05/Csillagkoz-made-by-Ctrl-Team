@@ -8,16 +8,23 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.csillagkoz.App;
+import org.csillagkoz.database.FlightDao;
 import org.csillagkoz.model.BookingModel;
+import org.csillagkoz.model.Flight;
+import org.csillagkoz.service.BookingService;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.List;
 
 public class PersonalDataController implements ModelAware {
 
     private BookingModel model;
     private String selectedIdType = "PASSPORT"; // Alapértelmezett az útlevél
+    private final FlightDao flightDao = new FlightDao();
+    private final BookingService bookingService = new BookingService();
 
     @Override
     public void setModel(BookingModel model) {
@@ -323,21 +330,8 @@ public class PersonalDataController implements ModelAware {
             System.out.println("Telefon szám: " + model.getPhone());
             System.out.println("Úti cél: " + model.getDestination() + " (" + model.getSelectedClass() + ")");
         }
-        double basePrice = 150000; // Alapár (ha a modellben nincs külön Flight objektum)
-        if (model != null && model.getSelectedClass() != null) {
-            switch (model.getSelectedClass().toUpperCase()) {
-                case "BUSINESS":
-                case "MÁSOD OSZTÁLY":
-                    basePrice *= 1.5;
-                    break;
-                case "FIRST_CLASS":
-                case "FIRST CLASS":
-                case "ELSŐ OSZTÁLY":
-                    basePrice *= 2.5;
-                    break;
-            }
-        }
-        PaymentController.currentAmountToPay = basePrice;
+        double finalPrice = calculateFinalPrice();
+        PaymentController.currentAmountToPay = finalPrice;
 
         // Átirányítás a fizetési ablakra
         try {
@@ -347,5 +341,59 @@ public class PersonalDataController implements ModelAware {
             System.err.println("Hiba a fizetési ablak betöltésekor: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    private double calculateFinalPrice() {
+        double fallbackPrice = 150000;
+        if (model == null || model.getDestination() == null) {
+            return fallbackPrice;
+        }
+
+        try {
+            Flight flight = findFlightForDestination(model.getDestination());
+            if (flight != null) {
+                String passengerTypeCode = mapPassengerType(model.getPassengerType(), model.getBirthDate());
+                return bookingService.calculateTicketPrice(
+                        flight,
+                        model.getSelectedClass(),
+                        passengerTypeCode,
+                        model.getBirthDate()
+                );
+            }
+        } catch (SQLException e) {
+            System.err.println("Nem sikerült lekérni a járat árát: " + e.getMessage());
+        }
+        return fallbackPrice;
+    }
+
+    private Flight findFlightForDestination(String destinationName) throws SQLException {
+        List<Flight> flights = flightDao.getAllFlights();
+        Flight fallback = null;
+        for (Flight flight : flights) {
+            if (flight.getDestination() != null
+                    && destinationName.equalsIgnoreCase(flight.getDestination().getName())) {
+                if ("FOGLALHATÓ".equalsIgnoreCase(flight.getStatus()) && flight.getAvailableSeats() > 0) {
+                    return flight;
+                }
+                if (fallback == null) {
+                    fallback = flight;
+                }
+            }
+        }
+        return fallback;
+    }
+
+    private String mapPassengerType(String uiPassengerType, LocalDate birthDate) {
+        if (uiPassengerType == null) {
+            return "ADULT";
+        }
+        String lower = uiPassengerType.toLowerCase();
+        if (lower.contains("gyermek") || lower.contains("diák")) {
+            return bookingService.isChild(birthDate) ? "CHILD" : "STUDENT";
+        }
+        if (lower.contains("nyugdíjas")) {
+            return "SENIOR";
+        }
+        return "ADULT";
     }
 }

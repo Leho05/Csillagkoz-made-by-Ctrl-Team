@@ -1,30 +1,31 @@
 # Csillagközi Légitársaság - Jegyfoglaló Rendszer (Ctrl-Team)
 
-Egy asztali JavaFX alkalmazás, amely intergalaktikus űrutazások jegyfoglalását, ülésválasztását, fizetési folyamatát és felhasználói adminisztrációját kezeli helyi SQLite adatbázis támogatással.
+Egy asztali JavaFX alkalmazás, amely intergalaktikus űrutazások jegyfoglalását, kabinválasztását, fizetési folyamatát és adminisztrációját kezeli helyi SQLite adatbázis támogatással.
 
 ---
 
 ## Főbb funkciók
 
 - **Felhasználó- és jogosultságkezelés**: Regisztráció és bejelentkezés szerepkörök (`USER` és `ADMIN`) megkülönböztetésével, munkamenet-kezeléssel (`SessionManager`), valamint regisztráció nélküli vendég móddal.
-- **Dinamikus járatkezelés**: A célállomások (Mars, Hold, külső bolygók és holdak bázisai) és járatinformációk közvetlenül a helyi SQLite adatbázisból töltődnek be (`FlightDao.getAllFlights()`).
+- **Dinamikus járatkezelés**: A célállomások (Mars, Hold, külső bolygók és holdak bázisai), alapárak és szabad helyek közvetlenül a helyi SQLite adatbázisból töltődnek be (`FlightDao.getAllFlights()`).
 - **Intelligens naptárkezelés**: A felület nem enged múltbeli dátumra foglalást indítani, a személyes adatoknál pedig tiltja a jövőbeli születési dátumokat, színezéssel jelezve a nem választható napokat.
-- **Többosztályos kabinkezelés**: Foglalási lehetőség Turista (Economy), Üzleti (Business) és Első osztályon (First Class), külön vizuális üléskiosztással.
-- **Automatikus árkalkuláció**: Üzleti szabályok szerinti kedvezmények számítása célállomás típus (Hold úti célok esetén 25% kedvezmény), utastípus (gyermek, diák, nyugdíjas) és kabinosztály-szorzók (Business: 1.5x, First Class: 2.5x) alapján.
+- **Többosztályos kabinkezelés**: Foglalási lehetőség Turista (Economy), Üzleti (Business) és Első osztályon (First Class) külön kabinoldalakkal.
+- **Automatikus árkalkuláció (`BookingService`)**: A végső jegyár a kiválasztott járat adatbázisbeli alapárából, a célállomás típusából (Hold úti célok esetén 25% kedvezmény), az utastípusból (gyermek 50%, diák 20%, nyugdíjas 30% kedvezmény) és a kabinosztály-szorzóból (Business: 1.5x, First Class: 2.5x) számolódik.
 - **Személyes adatok és okmányok validációja**: Névformátum, korhatár (18+), e-mail cím, telefonszám, valamint útlevél és személyi igazolvány formai ellenőrzése.
-- **Fizetési terminál szimuláció**: Bankkártyás fizetési felület a kártyaszám (16 számjegy), a lejárati dátum (HH/ÉÉ) és a CVC kód (3 számjegy) formai ellenőrzésével.
-- **Tranzakciókezelés és adatbázis-seeding**: Az alkalmazás indításakor automatikusan felépíti a relációs sémát, előkészíti a tesztjáratokat és az alapértelmezett fiókokat. A foglalások mentése adatbázis-tranzakcióban (`commit` / `rollback`) történik az adatkonzisztencia megőrzése érdekében.
-- **Központi állapotkezelés (BookingModel & ModelAware)**: A nézetek közötti adatáramlást egy dedikált `BookingModel` entitás és a `ModelAware` interfész biztosítja a kereséstől a fizetés lezárásáig.
+- **Fizetési terminál szimuláció és tranzakciós mentés**: Bankkártyás fizetési felület kártyaszám- (16 számjegy), lejárat- (`HH/ÉÉ`, nem lejárt kártya) és CVC-ellenőrzéssel (3 számjegy), amely sikeres ellenőrzés után adatbázis-tranzakcióban (`BookingService.processBooking` – `commit` / `rollback`) rögzíti az utast, a jegyet és csökkenti a járat szabad helyeit.
+- **Adminisztrációs központ (`AdminController`)**: Az `ADMIN` szerepkörrel belépett felhasználók megtekinthetik a rögzített jegyfoglalásokat és a járatok aktuális szabad helyeit/státuszát.
+- **Központi állapotkezelés (`BookingModel` & `ModelAware`)**: A nézetek közötti adatáramlást egy dedikált `BookingModel` entitás és a `ModelAware` interfész biztosítja a kereséstől a fizetés lezárásáig.
+- **Opcionális grafikai előnézeti mód (`VisualApp`)**: Külön indítható animált űrháttér, bolygó-, kabin- és űrlény-illusztrációk, valamint élő űrjegy-előnézet az eredeti vezérlők módosítása nélkül (részletek: [GRAFIKAI-UTMUTATO.md](GRAFIKAI-UTMUTATO.md)).
 
 ---
 
 ## Használt technológiák
 
-- **Programozási nyelv**: Java 17+ (Java 21 támogatással)
-- **Grafikus felület (GUI)**: JavaFX (FXML és Controls)
-- **Adatbázis & Perzisztencia**: SQLite (JDBC driver)
+- **Programozási nyelv**: Java 11+ (JDK 21 támogatással)
+- **Grafikus felület (GUI)**: JavaFX 13 (FXML és Controls)
+- **Adatbázis & Perzisztencia**: SQLite (`sqlite-jdbc`)
 - **Build rendszer**: Apache Maven
-- **Naplózás**: SLF4J (NOP logger)
+- **Naplózás**: SLF4J (`slf4j-nop`)
 
 ---
 
@@ -35,50 +36,83 @@ A projekt rétegzett MVC (Model-View-Controller) és DAO (Data Access Object) mi
 ```text
 Csillagkoz-made-by-Ctrl-Team/
 │
-├── pom.xml                                  # Maven projektleíró és függőségek
+├── pom.xml                                  # Eredeti Maven projektleíró (App)
+├── visual-pom.xml                           # Külön Maven projektleíró a grafikai előnézethez (VisualApp)
+├── start-visual.cmd                         # Kényelmi indítószkript a grafikai előnézethez (Windows)
+├── GRAFIKAI-UTMUTATO.md                     # Grafikai előnézet dokumentációja
 ├── csillagkoz.db                            # Helyi SQLite adatbázis (első futtatáskor jön létre)
 └── src/main/
-    ├── java/org/csillagkoz/
-    │   ├── App.java                         # Belépési pont, JavaFX életciklus, DB inicializálás
-    │   ├── controller/                      # GUI vezérlők
-    │   │   ├── LoginController.java         # Bejelentkezés, regisztráció és vendég mód vezérlője
-    │   │   ├── TicketBookingController.java # Fő foglalási felület vezérlője
-    │   │   ├── EconomyController.java       # Turista osztály ülésválasztása
-    │   │   ├── BusinessController.java      # Üzleti osztály ülésválasztása
-    │   │   ├── FirstClassController.java    # Első osztály ülésválasztása
-    │   │   ├── PersonalDataController.java  # Utas személyes adatainak bekérése és validációja
-    │   │   ├── PaymentController.java       # Fizetési felület és kártyaadatok ellenőrzése
-    │   │   └── ModelAware.java              # Interfész a modell megosztásához a vezérlők között
-    │   ├── database/                        # Adatbázis réteg
-    │   │   ├── Database.java                # Kapcsolatkezelés és inicializálás/seeding
-    │   │   ├── FlightDao.java               # Járatok lekérdezése és módosítása
-    │   │   ├── PassengerDao.java            # Utasok mentése és lekérdezése
-    │   │   ├── TicketDao.java               # Lefoglalt jegyek mentése
-    │   │   └── UserDao.java                 # Felhasználók hitelesítése és regisztrációja
-    │   ├── model/                           # Entitások és adatmodellek
-    │   │   ├── BookingModel.java            # Központi foglalási adatáramlási modell
-    │   │   ├── Destination.java             # Célállomás (név, típus, alapár)
-    │   │   ├── Flight.java                  # Járat modell (kapacitás, határidők, státusz)
-    │   │   ├── Passenger.java               # Utas modell (galaktikus ID, név, kor)
-    │   │   ├── Ticket.java                  # Jegy modell (ár, foglalási dátum, osztály)
-    │   │   └── User.java                    # Felhasználó modell (felhasználónév, jelszó, szerepkör)
-    │   └── service/                         # Üzleti logika és munkamenet
-    │       ├── BookingService.java          # Jegyár-számítás, validáció és tranzakciós mentés
-    │       └── SessionManager.java          # Bejelentkezett felhasználó munkamenetének kezelése
-    └── resources/org/csillagkoz/            # FXML felületi nézetek
-        ├── login.fxml                       # Bejelentkező és regisztrációs nézet
-        ├── ticket-booking.fxml              # Főoldali kereső és szűrő nézet
-        ├── economy-seats.fxml               # Turista osztály üléstérképe
-        ├── business-seats.fxml              # Üzleti osztály üléstérképe
-        ├── firstclass-seats.fxml            # Első osztály üléstérképe
-        ├── personal-data.fxml               # Személyes adatbekérő űrlap
-        └── payment.fxml                     # Fizetési terminál nézet
+    ├── java/
+    │   ├── module-info.java
+    │   └── org/csillagkoz/
+    │       ├── App.java                         # Alap belépési pont, JavaFX életciklus, DB inicializálás
+    │       ├── VisualApp.java                   # Opcionális grafikai belépési pont
+    │       ├── controller/                      # GUI vezérlők
+    │       │   ├── LoginController.java         # Bejelentkezés, regisztráció és vendég mód vezérlője
+    │       │   ├── TicketBookingController.java # Fő foglalási felület vezérlője
+    │       │   ├── EconomyController.java       # Turista osztály nézet
+    │       │   ├── BusinessController.java      # Üzleti osztály nézet
+    │       │   ├── FirstClassController.java    # Első osztály nézet
+    │       │   ├── PersonalDataController.java  # Utas adatok validációja és árkalkuláció
+    │       │   ├── PaymentController.java       # Fizetési felület, kártyaellenőrzés és mentés
+    │       │   ├── AdminController.java         # Adminisztrációs felület vezérlője
+    │       │   └── ModelAware.java              # Interfész a modell megosztásához a vezérlők között
+    │       ├── database/                        # Adatbázis réteg
+    │       │   ├── Database.java                # Kapcsolatkezelés és inicializálás/seeding
+    │       │   ├── FlightDao.java               # Járatok lekérdezése és módosítása
+    │       │   ├── PassengerDao.java            # Utasok mentése és lekérdezése
+    │       │   ├── TicketDao.java               # Lefoglalt jegyek mentése és összesítése
+    │       │   └── UserDao.java                 # Felhasználók hitelesítése és regisztrációja
+    │       ├── model/                           # Entitások és adatmodellek
+    │       │   ├── BookingModel.java            # Központi foglalási adatáramlási modell
+    │       │   ├── Destination.java             # Célállomás (név, típus, alapár)
+    │       │   ├── Flight.java                  # Járat modell (kapacitás, szabad helyek, határidők, státusz)
+    │       │   ├── Passenger.java               # Utas modell (galaktikus ID, név, kor)
+    │       │   ├── Ticket.java                  # Jegy modell (ár, foglalási dátum, osztály)
+    │       │   └── User.java                    # Felhasználó modell (felhasználónév, jelszó, szerepkör)
+    │       ├── service/                         # Üzleti logika és munkamenet
+    │       │   ├── BookingService.java          # Jegyár-számítás, validáció és tranzakciós mentés
+    │       │   └── SessionManager.java          # Bejelentkezett felhasználó munkamenetének kezelése
+    │       └── visual/                          # Opcionális grafikai réteg (VisualApp)
+    │           ├── SpaceAssets.java
+    │           ├── SpaceBackdrop.java
+    │           ├── SpaceRoute.java
+    │           ├── SpaceTheme.java
+    │           ├── SpaceView.java
+    │           └── TicketPreview.java
+    └── resources/org/csillagkoz/                # FXML felületi nézetek és vizuális erőforrások
+        ├── login.fxml                           # Bejelentkező és regisztrációs nézet
+        ├── ticket-booking.fxml                  # Főoldali kereső és szűrő nézet
+        ├── economy-seats.fxml                   # Turista osztály nézet
+        ├── business-seats.fxml                  # Üzleti osztály nézet
+        ├── firstclass-seats.fxml                # Első osztály nézet
+        ├── personal-data.fxml                   # Személyes adatbekérő űrlap
+        ├── payment.fxml                         # Fizetési terminál nézet
+        ├── admin.fxml                           # Adminisztrációs központ nézet
+        └── visual/                              # Grafikai stíluslap, leképezés és képek
 ```
+
 ---
 
 ## Futtatás és tesztfiókok
 
-Az alkalmazás elindítható közvetlenül az `App.java` osztály `main` metódusával a fejlesztői környezetből, vagy parancssorból Maven segítségével:
+### Alap alkalmazás indítása
+Az alkalmazás elindítható az `App.java` osztály `main` metódusával az IDE-ből, vagy parancssorból Maven segítségével:
 
 ```bash
 mvn clean javafx:run
+```
+
+### Grafikai előnézeti mód indítása
+```bash
+mvn -f visual-pom.xml compile javafx:run
+```
+Windows alatt a `start-visual.cmd` fájllal is elindítható.
+
+### Alapértelmezett tesztfiókok
+Az adatbázis inicializálásakor (`Database.java`) az alábbi két fiók jön létre automatikusan:
+
+| Felhasználónév | Jelszó | Szerepkör |
+|---|---|---|
+| `admin` | `admin123` | `ADMIN` |
+| `utas` | `utas123` | `USER` |

@@ -63,6 +63,16 @@ public class Flight {
         return availableSeats;
     }
 
+    public void setAvailableSeats(int availableSeats) {
+        if (availableSeats < 0) {
+            this.availableSeats = 0;
+        } else if (availableSeats > maxCapacity) {
+            this.availableSeats = maxCapacity;
+        } else {
+            this.availableSeats = availableSeats;
+        }
+    }
+
     public String getStatus() {
         return status;
     }

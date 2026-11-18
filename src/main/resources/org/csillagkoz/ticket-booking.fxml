@@ -78,6 +78,7 @@
             <children>
                 <Button fx:id="backToLoginButton" text="⬅ Bejelentkezés / Fiókváltás" onAction="#handleBackToLogin" />
                 <Button fx:id="cancelButton" text="Mégse" prefWidth="130.0" onAction="#handleCancel"/>
+                <Button fx:id="adminButton" text="Admin felület" onAction="#handleOpenAdmin" style="-fx-background-color: #d9534f; -fx-text-fill: white; -fx-font-weight: bold;" />
                 <Button fx:id="searchButton" text="Járatok keresése ➔" prefWidth="150.0" onAction="#handleSearchFlights"/>
             </children>
         </HBox>
