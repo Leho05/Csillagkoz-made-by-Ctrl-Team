@@ -28,7 +28,7 @@ public class PassengerDao {
         }
     }
 
-    // Utas lekérdezése azonosító (útlevélszám) alapján
+    //Utas lekérdezése azonosító (útlevélszám) alapján
     public Passenger getPassengerById(String galacticId) throws SQLException {
         String sql = "SELECT * FROM passengers WHERE galactic_id = ?";
 

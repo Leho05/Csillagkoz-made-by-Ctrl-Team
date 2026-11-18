@@ -234,11 +234,9 @@ public class PersonalDataController implements ModelAware {
             String[] words = trimmed.split("[\\s-]+");
             for (String word : words) {
                 if (word.isEmpty()) continue;
-                // Az első betűnek nagybetűnek kell lennie
                 if (!Character.isUpperCase(word.charAt(0))) {
                     return false;
                 }
-                // A többi betűnek kisbetűnek kell lennie
                 for (int i = 1; i < word.length(); i++) {
                     if (!Character.isLowerCase(word.charAt(i))) {
                         return false;
@@ -275,7 +273,7 @@ public class PersonalDataController implements ModelAware {
             }
         }
 
-        // 3. Ellenőrzés: E-mail cím formátuma (csak ha nem üres)
+        // 3. Ellenőrzés: E-mail cím formátuma
         if (emailField != null && emailField.getText() != null && !emailField.getText().trim().isEmpty()) {
             String email = emailField.getText().trim();
             long atCount = email.chars().filter(ch -> ch == '@').count();
@@ -285,7 +283,7 @@ public class PersonalDataController implements ModelAware {
             }
         }
 
-        // 4. Ellenőrzés: Telefonszám (+CC... vagy 06...) (csak ha nem üres)
+        // 4. Ellenőrzés: Telefonszám (+CC... vagy 06...)
         if (phoneField != null && phoneField.getText() != null && !phoneField.getText().trim().isEmpty()) {
             String phone = phoneField.getText().trim();
             if (!phone.matches("^(\\+\\d{8,15}|0\\d{8,14})$")) {
@@ -294,7 +292,7 @@ public class PersonalDataController implements ModelAware {
             }
         }
 
-        // 5. Ellenőrzés: Útlevél / Személyi igazolvány száma (csak ha nem üres)
+        // 5. Ellenőrzés: Útlevél /Személyi igazolvány száma
         if (passportField != null && passportField.getText() != null && !passportField.getText().trim().isEmpty()) {
             String passport = passportField.getText().trim().toUpperCase();
             boolean isValidId = false;
@@ -314,7 +312,7 @@ public class PersonalDataController implements ModelAware {
             }
         }
 
-        // Ha bármilyen hiba van, itt állunk meg egyszerre, kiírva az összeset a mezőkhöz
+        // Ha bármilyen hiba van
         if (hasError) {
             return;
         }
@@ -333,7 +331,7 @@ public class PersonalDataController implements ModelAware {
         double finalPrice = calculateFinalPrice();
         PaymentController.currentAmountToPay = finalPrice;
 
-        // Átirányítás a fizetési ablakra
+        // Átiranyítás a fizetési ablakra
         try {
             App.setRoot("payment", "Csillagköz - Fizetés");
         } catch (IOException e)
