@@ -62,6 +62,31 @@ public class TicketBookingController implements ModelAware {
                     }
                 }
             }
+
+            // Kosár gomb frissítése
+            if (cartButton != null) {
+                int count = model.getCart().size();
+                if (count > 0) {
+                    cartButton.setText("Kosár (" + count + " db jegy) ➔ Fizetés");
+                    cartButton.setVisible(true);
+                    cartButton.setManaged(true);
+                } else {
+                    cartButton.setVisible(false);
+                    cartButton.setManaged(false);
+                }
+            }
+        }
+    }
+
+    @FXML
+    private void handleOpenCart() {
+        if (model != null && !model.getCart().isEmpty()) {
+            PaymentController.currentAmountToPay = model.getTotalPrice();
+            try {
+                App.setRoot("payment", "Csillagköz - Fizetés");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
     @FXML
@@ -80,6 +105,9 @@ public class TicketBookingController implements ModelAware {
 
     @FXML
     private Button adminButton;
+
+    @FXML
+    private Button cartButton;
 
     @FXML
     private ComboBox<String> destinationComboBox;

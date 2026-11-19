@@ -6,13 +6,14 @@ Egy asztali JavaFX alkalmazás, amely intergalaktikus űrutazások jegyfoglalás
 
 ## Főbb funkciók
 
-- **Felhasználó- és jogosultságkezelés**: Regisztráció és bejelentkezés szerepkörök (`USER` és `ADMIN`) megkülönböztetésével, munkamenet-kezeléssel (`SessionManager`), valamint regisztráció nélküli vendég móddal.
+- **Felhasználó- és jogosultságkezelés**: Kétlépcsős bejelentkezés (felhasználói belépés, adminisztrátori belépés, regisztráció, vendég mód) `USER` és `ADMIN` szerepkörökkel, munkamenet-kezeléssel (`SessionManager`), valamint mentett személyes adatok automatikus kitöltésével és profilba mentésével.
 - **Dinamikus járatkezelés**: A célállomások (Mars, Hold, külső bolygók és holdak bázisai), alapárak és szabad helyek közvetlenül a helyi SQLite adatbázisból töltődnek be (`FlightDao.getAllFlights()`).
 - **Intelligens naptárkezelés**: A felület nem enged múltbeli dátumra foglalást indítani, a személyes adatoknál pedig tiltja a jövőbeli születési dátumokat, színezéssel jelezve a nem választható napokat.
 - **Többosztályos kabinkezelés**: Foglalási lehetőség Turista (Economy), Üzleti (Business) és Első osztályon (First Class) külön kabinoldalakkal.
+- **Kosárkezelés és több jegy vásárlása**: A személyes adatok megadása után a jegy kosárba tehető (`CartItem`), így egy menetben több jegy is összeállítható, a fizetési felületen pedig megtekinthetők és törölhetők a kosár tételei.
 - **Automatikus árkalkuláció (`BookingService`)**: A végső jegyár a kiválasztott járat adatbázisbeli alapárából, a célállomás típusából (Hold úti célok esetén 25% kedvezmény), az utastípusból (gyermek 50%, diák 20%, nyugdíjas 30% kedvezmény) és a kabinosztály-szorzóból (Business: 1.5x, First Class: 2.5x) számolódik.
-- **Személyes adatok és okmányok validációja**: Névformátum, korhatár (18+), e-mail cím, telefonszám, valamint útlevél és személyi igazolvány formai ellenőrzése.
-- **Fizetési terminál szimuláció és tranzakciós mentés**: Bankkártyás fizetési felület kártyaszám- (16 számjegy), lejárat- (`HH/ÉÉ`, nem lejárt kártya) és CVC-ellenőrzéssel (3 számjegy), amely sikeres ellenőrzés után adatbázis-tranzakcióban (`BookingService.processBooking` – `commit` / `rollback`) rögzíti az utast, a jegyet és csökkenti a járat szabad helyeit.
+- **Személyes adatok, autofill és okmányok validációja**: Weboldalszerű lenyíló automatikus kitöltés bejelentkezett felhasználóknak, névformátum, korhatár (18+), e-mail cím, telefonszám, valamint útlevél és személyi igazolvány formai ellenőrzése.
+- **Fizetési terminál szimuláció és tranzakciós mentés**: Bankkártyás fizetési felület kártyaszám- (16 számjegy), lejárat- (`HH/ÉÉ`, nem lejárt kártya) és CVC-ellenőrzéssel (3 számjegy), amely sikeres ellenőrzés után egyetlen adatbázis-tranzakcióban (`BookingService.processBooking` / `processCartBooking` – `commit` / `rollback`) rögzíti az utasokat, a jegyeket és csökkenti a járatok szabad helyeit.
 - **Adminisztrációs központ (`AdminController`)**: Az `ADMIN` szerepkörrel belépett felhasználók megtekinthetik a rögzített jegyfoglalásokat és a járatok aktuális szabad helyeit/státuszát.
 - **Központi állapotkezelés (`BookingModel` & `ModelAware`)**: A nézetek közötti adatáramlást egy dedikált `BookingModel` entitás és a `ModelAware` interfész biztosítja a kereséstől a fizetés lezárásáig.
 - **Opcionális grafikai előnézeti mód (`VisualApp`)**: Külön indítható animált űrháttér, bolygó-, kabin- és űrlény-illusztrációk, valamint élő űrjegy-előnézet az eredeti vezérlők módosítása nélkül (részletek: [GRAFIKAI-UTMUTATO.md](GRAFIKAI-UTMUTATO.md)).
@@ -64,7 +65,8 @@ Csillagkoz-made-by-Ctrl-Team/
     │       │   ├── TicketDao.java               # Lefoglalt jegyek mentése és összesítése
     │       │   └── UserDao.java                 # Felhasználók hitelesítése és regisztrációja
     │       ├── model/                           # Entitások és adatmodellek
-    │       │   ├── BookingModel.java            # Központi foglalási adatáramlási modell
+    │       │   ├── BookingModel.java            # Központi foglalási adatáramlási modell és kosár
+    │       │   ├── CartItem.java                # Kosárba tett jegy adatait tároló modell
     │       │   ├── Destination.java             # Célállomás (név, típus, alapár)
     │       │   ├── Flight.java                  # Járat modell (kapacitás, szabad helyek, határidők, státusz)
     │       │   ├── Passenger.java               # Utas modell (galaktikus ID, név, kor)

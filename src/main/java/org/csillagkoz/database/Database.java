@@ -33,8 +33,7 @@ public class Database {
         String createPassengerTable = "CREATE TABLE IF NOT EXISTS passengers ("
                 + "galactic_id TEXT PRIMARY KEY, "
                 + "name TEXT NOT NULL, "
-                + "age INTEGER NOT NULL, "
-                + "health_certificate INTEGER NOT NULL"
+                + "age INTEGER NOT NULL"
                 + ");";
 
         String createTicketTable = "CREATE TABLE IF NOT EXISTS tickets ("
@@ -51,7 +50,14 @@ public class Database {
         String createUserTable = "CREATE TABLE IF NOT EXISTS users ("
                 + "username TEXT PRIMARY KEY, "
                 + "password TEXT NOT NULL, "
-                + "role TEXT NOT NULL" // "USER" vagy "ADMIN"
+                + "role TEXT NOT NULL, " // "USER" vagy "ADMIN"
+                + "last_name TEXT, "
+                + "first_name TEXT, "
+                + "birth_date TEXT, "
+                + "id_type TEXT, "
+                + "passport_number TEXT, "
+                + "email TEXT, "
+                + "phone TEXT"
                 + ");";
 
         try (Connection conn = getConnection(); Statement stmt = conn.createStatement()) {
@@ -63,11 +69,31 @@ public class Database {
             stmt.execute(createPassengerTable);
             stmt.execute(createTicketTable);
             stmt.execute(createUserTable);
+            ensureUserProfileColumns(stmt);
             seedInitialData(stmt);
 
         } catch (SQLException e) {
             System.err.println("Hiba az adatbázis inicializálásakor: " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    // Ha már létezett egy korábbi users tábla, pótoljuk a hiányzó profil oszlopokat
+    private static void ensureUserProfileColumns(Statement stmt) throws SQLException {
+        java.util.Set<String> columns = new java.util.HashSet<>();
+        try (ResultSet rs = stmt.executeQuery("PRAGMA table_info(users);")) {
+            while (rs.next()) {
+                columns.add(rs.getString("name"));
+            }
+        }
+        String[] profileColumns = {
+                "last_name", "first_name", "birth_date",
+                "id_type", "passport_number", "email", "phone"
+        };
+        for (String col : profileColumns) {
+            if (!columns.contains(col)) {
+                stmt.execute("ALTER TABLE users ADD COLUMN " + col + " TEXT;");
+            }
         }
     }
 
@@ -80,20 +106,30 @@ public class Database {
                         + ") VALUES "
                         + "('MARS-2026-01', 'Mars Kolónia Alpha', 'PLANET', 180000, '2026-11-10T08:00', '2026-11-08T08:00', 40, 40, 'FOGLALHATÓ'), "
                         + "('MARS-2026-02', 'Mars Új Kairó', 'PLANET', 195000, '2026-11-15T10:00', '2026-11-13T10:00', 35, 35, 'FOGLALHATÓ'), "
-                        + "('MOON-2026-01', 'Luna Bázis', 'MOON', 65000, '2026-11-05T14:30', '2026-11-03T14:30', 50, 50, 'FOGLALHATÓ'), "
-                        + "('MOON-2026-02', 'Tycho Kráter Kutatóközpont', 'MOON', 75000, '2026-11-18T16:00', '2026-11-16T16:00', 45, 45, 'FOGLALHATÓ'), "
-                        + "('MOON-2026-03', 'Copernicus Űrkikötő', 'MOON', 70000, '2026-11-25T09:00', '2026-11-23T09:00', 60, 60, 'FOGLALHATÓ'), "
-                        + "('TITAN-2026-01', 'Titan Kutatóállomás', 'MOON', 320000, '2026-12-01T10:00', '2026-11-28T10:00', 30, 30, 'FOGLALHATÓ'), "
-                        + "('EUROPA-2026-01', 'Europa Óceánbázis', 'MOON', 290000, '2026-12-15T09:15', '2026-12-12T09:15', 30, 30, 'FOGLALHATÓ'), "
+                        + "('MOON-2026-01', 'Luna Bázis (Hold)', 'MOON', 65000, '2026-11-05T14:30', '2026-11-03T14:30', 50, 50, 'FOGLALHATÓ'), "
+                        + "('MOON-2026-02', 'Tycho Kráter Kutatóközpont (Hold)', 'MOON', 75000, '2026-11-18T16:00', '2026-11-16T16:00', 45, 45, 'FOGLALHATÓ'), "
+                        + "('MOON-2026-03', 'Copernicus Űrkikötő (Hold)', 'MOON', 70000, '2026-11-25T09:00', '2026-11-23T09:00', 60, 60, 'FOGLALHATÓ'), "
+                        + "('TITAN-2026-01', 'Titan Kutatóállomás (Hold)', 'MOON', 320000, '2026-12-01T10:00', '2026-11-28T10:00', 30, 30, 'FOGLALHATÓ'), "
+                        + "('EUROPA-2026-01', 'Europa Óceánbázis (Hold)', 'MOON', 290000, '2026-12-15T09:15', '2026-12-12T09:15', 30, 30, 'FOGLALHATÓ'), "
                         + "('VENUS-2026-01', 'Vénusz Felhőváros', 'PLANET', 210000, '2026-10-15T06:00', '2026-10-13T06:00', 25, 25, 'FOGLALHATÓ'), "
                         + "('CERES-2026-01', 'Ceres Bányaközpont', 'PLANET', 140000, '2026-11-20T12:00', '2026-11-18T12:00', 20, 20, 'FOGLALHATÓ'), "
                         + "('VESTA-2026-01', 'Vesta Kutatóállomás', 'PLANET', 155000, '2026-11-28T15:30', '2026-11-26T15:30', 20, 20, 'FOGLALHATÓ');";
                 String insertUsers = "INSERT OR IGNORE INTO users (username, password, role) VALUES "
                         + "('admin', 'admin123', 'ADMIN'), "
                         + "('utas', 'utas123', 'USER');";
+                String seedDefaultPassengerProfile = "UPDATE users SET "
+                        + "last_name = 'Kovács', "
+                        + "first_name = 'János', "
+                        + "birth_date = '1995-05-15', "
+                        + "id_type = 'PASSPORT', "
+                        + "passport_number = 'AB123456', "
+                        + "email = 'utas@csillagkoz.hu', "
+                        + "phone = '+36301234567' "
+                        + "WHERE username = 'utas' AND (last_name IS NULL OR last_name = '');";
 
                 stmt.executeUpdate(insertFlights);
                 stmt.executeUpdate(insertUsers);
+                stmt.executeUpdate(seedDefaultPassengerProfile);
 
                 System.out.println("Járatok sikeresen inicializálva az adatbázisba.");
             }

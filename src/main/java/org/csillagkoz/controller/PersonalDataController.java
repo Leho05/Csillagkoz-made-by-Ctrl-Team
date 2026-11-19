@@ -1,23 +1,36 @@
 package org.csillagkoz.controller;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.geometry.Side;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.csillagkoz.App;
 import org.csillagkoz.database.FlightDao;
+import org.csillagkoz.database.UserDao;
 import org.csillagkoz.model.BookingModel;
+import org.csillagkoz.model.CartItem;
 import org.csillagkoz.model.Flight;
+import org.csillagkoz.model.Passenger;
+import org.csillagkoz.model.User;
 import org.csillagkoz.service.BookingService;
+import org.csillagkoz.service.SessionManager;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 public class PersonalDataController implements ModelAware {
 
@@ -25,6 +38,7 @@ public class PersonalDataController implements ModelAware {
     private String selectedIdType = "PASSPORT"; // Alapértelmezett az útlevél
     private final FlightDao flightDao = new FlightDao();
     private final BookingService bookingService = new BookingService();
+    private final UserDao userDao = new UserDao();
 
     @Override
     public void setModel(BookingModel model) {
@@ -38,6 +52,13 @@ public class PersonalDataController implements ModelAware {
             if (passportField != null) passportField.setText(model.getPassportNumber());
             if (emailField != null) emailField.setText(model.getEmail());
             if (phoneField != null) phoneField.setText(model.getPhone());
+            return;
+        }
+
+        // Ha be van jelentkezve a felhasználó és vannak mentett adatai, bekötjük a weboldalas lenyíló autofill menüt
+        User currentUser = SessionManager.getCurrentUser();
+        if (currentUser != null && currentUser.hasPersonalData()) {
+            setupAutofillMenu(currentUser);
         }
     }
 
@@ -193,7 +214,65 @@ public class PersonalDataController implements ModelAware {
     }
 
     @FXML
+    private void handleAddToCart() {
+        if (!validateAndSaveInputs()) {
+            return;
+        }
+        if (model == null) {
+            return;
+        }
+
+        try {
+            Flight flight = findFlightForDestination(model.getDestination());
+            if (flight == null) {
+                setError(lastNameField, lastNameErrorLabel, "Nem található járat a kiválasztott célállomásra!");
+                return;
+            }
+
+            String fullName = (model.getLastName() + " " + model.getFirstName()).trim();
+            int age = Period.between(model.getBirthDate(), LocalDate.now()).getYears();
+            Passenger passenger = new Passenger(fullName, model.getPassportNumber(), age);
+            String travelClass = model.getSelectedClass() != null ? model.getSelectedClass() : "ECONOMY";
+            double price = calculateFinalPrice();
+
+            model.addToCart(new CartItem(flight, passenger, travelClass, price));
+            model.clearCurrentBooking();
+
+            App.setRoot("ticket-booking", "Csillagköz - Jegyfoglalás");
+        } catch (SQLException | IOException e) {
+            System.err.println("Hiba a kosárba tételkor: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
     private void handleFinalize() {
+        if (!validateAndSaveInputs()) {
+            return;
+        }
+
+        //Adatok megjelenítése a képernyőn
+        System.out.println("A jegy vásárlása sikeresen megtörtént!");
+        if (model != null) {
+            System.out.println("Utas: " + model.getLastName() + " " + model.getFirstName());
+            System.out.println("E-mail: " + model.getEmail());
+            System.out.println("Telefon szám: " + model.getPhone());
+            System.out.println("Úti cél: " + model.getDestination() + " (" + model.getSelectedClass() + ")");
+        }
+        double finalPrice = calculateFinalPrice();
+        PaymentController.currentAmountToPay = finalPrice;
+
+        // Átiranyítás a fizetési ablakra
+        try {
+            App.setRoot("payment", "Csillagköz - Fizetés");
+        } catch (IOException e)
+        {
+            System.err.println("Hiba a fizetési ablak betöltésekor: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private boolean validateAndSaveInputs() {
         clearErrors();
         boolean hasError = false;
 
@@ -314,31 +393,15 @@ public class PersonalDataController implements ModelAware {
 
         // Ha bármilyen hiba van
         if (hasError) {
-            return;
+            return false;
         }
 
         //Sikeres validációnál mentjük a modellbe
         saveInputToModel();
 
-        //Adatok megjelenítése a képernyőn
-        System.out.println("A jegy vásárlása sikeresen megtörtént!");
-        if (model != null) {
-            System.out.println("Utas: " + model.getLastName() + " " + model.getFirstName());
-            System.out.println("E-mail: " + model.getEmail());
-            System.out.println("Telefon szám: " + model.getPhone());
-            System.out.println("Úti cél: " + model.getDestination() + " (" + model.getSelectedClass() + ")");
-        }
-        double finalPrice = calculateFinalPrice();
-        PaymentController.currentAmountToPay = finalPrice;
-
-        // Átiranyítás a fizetési ablakra
-        try {
-            App.setRoot("payment", "Csillagköz - Fizetés");
-        } catch (IOException e)
-        {
-            System.err.println("Hiba a fizetési ablak betöltésekor: " + e.getMessage());
-            e.printStackTrace();
-        }
+        // Ha be van jelentkezve, megkérdezzük, hogy mentse-e az adatokat a fiókjához
+        askToSaveToProfile();
+        return true;
     }
 
     private double calculateFinalPrice() {
@@ -393,5 +456,113 @@ public class PersonalDataController implements ModelAware {
             return "SENIOR";
         }
         return "ADULT";
+    }
+
+    private void setupAutofillMenu(User user) {
+        ContextMenu autofillMenu = new ContextMenu();
+        MenuItem item = new MenuItem("👤 " + user.getLastName() + " " + user.getFirstName()
+                + "  (" + user.getPassportNumber() + ")");
+        item.setOnAction(e -> fillFieldsFromUser(user));
+        autofillMenu.getItems().add(item);
+
+        TextField[] fields = {lastNameField, firstNameField, passportField, emailField, phoneField};
+        for (TextField field : fields) {
+            if (field == null) continue;
+
+            field.setOnMouseClicked(e -> {
+                if (field.getText() == null || field.getText().trim().isEmpty()) {
+                    showAutofillMenu(autofillMenu, field);
+                }
+            });
+
+            field.focusedProperty().addListener((obs, wasFocused, isFocused) -> {
+                if (isFocused && (field.getText() == null || field.getText().trim().isEmpty())) {
+                    showAutofillMenu(autofillMenu, field);
+                } else if (!isFocused) {
+                    autofillMenu.hide();
+                }
+            });
+
+            field.textProperty().addListener((obs, oldText, newText) -> {
+                if (newText != null && !newText.trim().isEmpty()) {
+                    autofillMenu.hide();
+                }
+            });
+        }
+
+        
+        Platform.runLater(() -> {
+            if (lastNameField != null && lastNameField.isFocused()
+                    && (lastNameField.getText() == null || lastNameField.getText().trim().isEmpty())) {
+                showAutofillMenu(autofillMenu, lastNameField);
+            }
+        });
+    }
+
+    private void showAutofillMenu(ContextMenu menu, TextField field) {
+        if (field.getScene() != null && field.getScene().getWindow() != null
+                && field.getScene().getWindow().isShowing()) {
+            menu.show(field, Side.BOTTOM, 0, 2);
+        }
+    }
+
+    private void fillFieldsFromUser(User user) {
+        if (lastNameField != null) lastNameField.setText(user.getLastName());
+        if (firstNameField != null) firstNameField.setText(user.getFirstName());
+        if (birthDatePicker != null && user.getBirthDate() != null && !user.getBirthDate().isEmpty()) {
+            birthDatePicker.setValue(LocalDate.parse(user.getBirthDate()));
+        }
+        if ("IDCARD".equalsIgnoreCase(user.getIdType())) {
+            handleSelectIdCard();
+        } else {
+            handleSelectPassport();
+        }
+        if (passportField != null) passportField.setText(user.getPassportNumber());
+        if (emailField != null) emailField.setText(user.getEmail());
+        if (phoneField != null) phoneField.setText(user.getPhone());
+    }
+
+    private void askToSaveToProfile() {
+        User currentUser = SessionManager.getCurrentUser();
+        if (currentUser == null || !hasProfileDataChanged(currentUser)) {
+            return;
+        }
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Adatok mentése");
+        alert.setHeaderText("Személyes adatok mentése a fiókhoz");
+        alert.setContentText("Szeretnéd elmenteni ezeket a személyes adatokat a felhasználói fiókodhoz a következő foglalásokhoz?");
+
+        ButtonType yesBtn = new ButtonType("Igen");
+        ButtonType noBtn = new ButtonType("Nem");
+        alert.getButtonTypes().setAll(yesBtn, noBtn);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == yesBtn) {
+            currentUser.setLastName(lastNameField.getText().trim());
+            currentUser.setFirstName(firstNameField.getText().trim());
+            currentUser.setBirthDate(birthDatePicker.getValue().toString());
+            currentUser.setIdType(selectedIdType);
+            currentUser.setPassportNumber(passportField.getText().trim().toUpperCase());
+            currentUser.setEmail(emailField.getText().trim());
+            currentUser.setPhone(phoneField.getText().trim());
+
+            try {
+                userDao.savePersonalData(currentUser);
+            } catch (SQLException e) {
+                System.err.println("Nem sikerült elmenteni a felhasználó adatait: " + e.getMessage());
+            }
+        }
+    }
+
+    private boolean hasProfileDataChanged(User user) {
+        String birthStr = birthDatePicker.getValue() != null ? birthDatePicker.getValue().toString() : "";
+        return !Objects.equals(user.getLastName(), lastNameField.getText().trim())
+                || !Objects.equals(user.getFirstName(), firstNameField.getText().trim())
+                || !Objects.equals(user.getBirthDate(), birthStr)
+                || !Objects.equals(user.getIdType(), selectedIdType)
+                || !Objects.equals(user.getPassportNumber(), passportField.getText().trim().toUpperCase())
+                || !Objects.equals(user.getEmail(), emailField.getText().trim())
+                || !Objects.equals(user.getPhone(), phoneField.getText().trim());
     }
 }

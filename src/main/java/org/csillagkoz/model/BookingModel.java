@@ -1,6 +1,8 @@
 package org.csillagkoz.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BookingModel {
     private String previousView = "ticket-booking";
@@ -20,6 +22,47 @@ public class BookingModel {
     private String email;
     private String phone;
 
+    // Kosár a több jegy együttes megvásárlásához
+    private List<CartItem> cart = new ArrayList<>();
+
+    public List<CartItem> getCart() {
+        return cart;
+    }
+    public void addToCart(CartItem item) {
+        if (item != null) {
+            cart.add(item);
+        }
+    }
+    public void removeFromCart(CartItem item) {
+        cart.remove(item);
+    }
+    public void clearCart() {
+        cart.clear();
+    }
+    public double getTotalPrice() {
+        double total = 0;
+        for (CartItem item : cart) {
+            total += item.getPrice();
+        }
+        return total;
+    }
+
+    public void clearCurrentBooking() {
+        this.previousView = "ticket-booking";
+
+        this.departure = null;
+        this.destination = null;
+        this.flightDate = null;
+        this.passengerType = null;
+        this.selectedClass = null;
+
+        this.lastName = null;
+        this.firstName = null;
+        this.birthDate = null;
+        this.passportNumber = null;
+        this.email = null;
+        this.phone = null;
+    }
     public String getPreviousView() {
         return previousView;
     }

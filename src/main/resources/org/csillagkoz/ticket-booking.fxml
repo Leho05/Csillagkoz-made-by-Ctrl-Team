@@ -77,11 +77,12 @@
         <HBox alignment="CENTER" spacing="20.0" style="-fx-padding: 10 0 0 0;">
             <children>
                 <Button fx:id="backToLoginButton" text="⬅ Bejelentkezés / Fiókváltás" onAction="#handleBackToLogin" />
-                <Button fx:id="cancelButton" text="Mégse" prefWidth="130.0" onAction="#handleCancel"/>
+                <Button fx:id="cancelButton" text="Törlés" prefWidth="130.0" onAction="#handleCancel"/>
                 <Button fx:id="adminButton" text="Admin felület" onAction="#handleOpenAdmin" style="-fx-background-color: #d9534f; -fx-text-fill: white; -fx-font-weight: bold;" />
                 <Button fx:id="searchButton" text="Járatok keresése ➔" prefWidth="150.0" onAction="#handleSearchFlights"/>
             </children>
         </HBox>
+        <Button fx:id="cartButton" text="Kosár (0 db jegy) -> Fizetés" onAction="#handleOpenCart" visible="false" managed="false" style="-fx-background-color: #28a745; -fx-text-fill: white; -fx-font-weight: bold;" />
     </children>
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>

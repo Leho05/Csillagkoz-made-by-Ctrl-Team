@@ -3,11 +3,14 @@ package org.csillagkoz.controller;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import org.csillagkoz.App;
 import org.csillagkoz.database.FlightDao;
 import org.csillagkoz.model.BookingModel;
+import org.csillagkoz.model.CartItem;
 import org.csillagkoz.model.Flight;
 import org.csillagkoz.model.Passenger;
 import org.csillagkoz.model.Ticket;
@@ -26,6 +29,8 @@ public class PaymentController implements ModelAware {
     private final FlightDao flightDao = new FlightDao();
     private final BookingService bookingService = new BookingService();
 
+    @FXML private VBox cartSection;
+    @FXML private ListView<CartItem> cartListView;
     @FXML private Label amountLabel;
     @FXML private TextField cardHolderField;
     @FXML private TextField cardNumberField;
@@ -33,16 +38,52 @@ public class PaymentController implements ModelAware {
     @FXML private PasswordField cvcField;
     @FXML private Label errorLabel;
 
+    // Statikus segédváltozó az ár megjelenítéséhez
     public static double currentAmountToPay = 0;
 
     @Override
     public void setModel(BookingModel model) {
         this.model = model;
+        refreshCartView();
     }
 
     @FXML
     public void initialize() {
         amountLabel.setText("Fizetendő összeg: " + String.format("%.0f", currentAmountToPay) + " Ft");
+    }
+
+    private void refreshCartView() {
+        if (cartSection == null || cartListView == null) {
+            return;
+        }
+        if (model != null && !model.getCart().isEmpty()) {
+            cartSection.setVisible(true);
+            cartSection.setManaged(true);
+            cartListView.getItems().setAll(model.getCart());
+            currentAmountToPay = model.getTotalPrice();
+        } else {
+            cartSection.setVisible(false);
+            cartSection.setManaged(false);
+            cartListView.getItems().clear();
+            if (model != null && model.getDestination() == null) {
+                currentAmountToPay = 0;
+            }
+        }
+        if (amountLabel != null) {
+            amountLabel.setText("Fizetendő összeg: " + String.format("%.0f", currentAmountToPay) + " Ft");
+        }
+    }
+
+    @FXML
+    private void handleRemoveSelected() {
+        if (model == null || cartListView == null) {
+            return;
+        }
+        CartItem selected = cartListView.getSelectionModel().getSelectedItem();
+        if (selected != null) {
+            model.removeFromCart(selected);
+            refreshCartView();
+        }
     }
 
     @FXML
@@ -55,6 +96,7 @@ public class PaymentController implements ModelAware {
         String expiry = expiryField.getText().trim();
         String cvc = cvcField.getText().trim();
 
+        // 1. Egyszerű formai ellenőrzések (Validáció)
         if (holder.isEmpty() || cardNumber.isEmpty() || expiry.isEmpty() || cvc.isEmpty()) {
             showError("Minden mező kitöltése kötelező!");
             return;
@@ -80,17 +122,19 @@ public class PaymentController implements ModelAware {
             return;
         }
 
-        // MENTÉS AZ ADATBÁZISBA TRANZAKCIÓVAL
+        // 2. MENTÉS AZ ADATBÁZISBA TRANZAKCIÓVAL
         if (!saveBooking()) {
             return;
         }
 
-        // Ha minden adat helyes és a mentés is sikeres, sikeres fizetés üzenet
+        // 3. Ha minden adat helyes és a mentés is sikeres, sikeres fizetés üzenet
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Sikeres fizetés");
         alert.setHeaderText("A tranzakció sikeresen megtörtént!");
         alert.setContentText("Köszönjük a vásárlást, a jegyét rögzítettük a rendszerben.");
         alert.showAndWait();
+
+        // 4. Visszairányítás a főoldalra
         try {
             App.setRoot("ticket-booking", "Csillagköz - Jegyfoglalás");
         } catch (IOException e) {
@@ -106,6 +150,17 @@ public class PaymentController implements ModelAware {
     }
 
     private boolean saveBooking() {
+        // Ha a kosárban vannak jegyek, az egész kosarat egyetlen tranzakcióban mentjük el
+        if (model != null && !model.getCart().isEmpty()) {
+            if (!bookingService.processCartBooking(model.getCart())) {
+                showError("Nem sikerült rögzíteni a kosárban lévő foglalásokat az adatbázisban!");
+                return false;
+            }
+            model.clearCart();
+            model.clearCurrentBooking();
+            return true;
+        }
+
         if (model == null || model.getDestination() == null || model.getPassportNumber() == null) {
             showError("Hiányzó foglalási adatok! Kérjük, kezdje újra a foglalást.");
             return false;
@@ -131,7 +186,7 @@ public class PaymentController implements ModelAware {
                 ? Period.between(model.getBirthDate(), LocalDate.now()).getYears()
                 : 18;
 
-        Passenger passenger = new Passenger(fullName, model.getPassportNumber(), age, true);
+        Passenger passenger = new Passenger(fullName, model.getPassportNumber(), age);
         String ticketId = "TKT-" + System.currentTimeMillis();
         String travelClass = model.getSelectedClass() != null ? model.getSelectedClass() : "ECONOMY";
         Ticket ticket = new Ticket(ticketId, passenger, flight, travelClass, currentAmountToPay);
@@ -140,6 +195,7 @@ public class PaymentController implements ModelAware {
             showError("Nem sikerült rögzíteni a foglalást az adatbázisban!");
             return false;
         }
+        model.clearCurrentBooking();
         return true;
     }
 
@@ -159,7 +215,11 @@ public class PaymentController implements ModelAware {
     @FXML
     private void handleCancel() {
         try {
-            App.setRoot("personal-data", "Személyes adatok");
+            if (model != null && model.getDestination() == null) {
+                App.setRoot("ticket-booking", "Csillagköz - Jegyfoglalás");
+            } else {
+                App.setRoot("personal-data", "Csillagköz - Személyes adatok");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

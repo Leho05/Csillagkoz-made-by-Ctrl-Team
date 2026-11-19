@@ -5,11 +5,15 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.csillagkoz.database.Database;
 import org.csillagkoz.database.FlightDao;
 import org.csillagkoz.database.PassengerDao;
 import org.csillagkoz.database.TicketDao;
+import org.csillagkoz.model.CartItem;
 import org.csillagkoz.model.Flight;
 import org.csillagkoz.model.Passenger;
 import org.csillagkoz.model.Ticket;
@@ -19,7 +23,6 @@ import org.csillagkoz.model.Ticket;
  */
 public class BookingService {
 
-    // DAO objektumok az adatbázis műveletekhez
     private final PassengerDao passengerDao = new PassengerDao();
     private final TicketDao ticketDao = new TicketDao();
     private final FlightDao flightDao = new FlightDao();
@@ -31,7 +34,6 @@ public class BookingService {
         if (birthDate == null) {
             return false;
         }
-        // Kiszámolja a mai nap és a születési dátum közötti időtartamot
         int age = Period.between(birthDate, LocalDate.now()).getYears();
 
         // 18 év alatt van-e (és nem jövőbeli dátum)
@@ -83,8 +85,8 @@ public class BookingService {
                 case "SENIOR":
                     price *= 0.7; // 30% kedvezmény
                     break;
-                default: // ADULT / FELNŐTT
-                    price *= 1.0; // Teljes ár
+                default: // FELNŐTT
+                    price *= 1.0;
                     break;
             }
         }
@@ -110,17 +112,14 @@ public class BookingService {
 
         try (Connection connection = Database.getConnection()) {
 
-            // 1. Kikapcsoljuk az automatikus mentést (ez indítja a tranzakciót)
             connection.setAutoCommit(false);
 
             try {
-                // 2. Lépés: Utas rögzítése az adatbázisban
+                //Utas rögzítése az adatbázisban
                 passengerDao.saveOrUpdatePassenger(connection, passenger);
-
-                // 3. Lépés: Jegy mentése
                 ticketDao.saveTicket(connection, ticket);
 
-                // 4. Lépés: Szabad helyek csökkentése a járaton
+                // Szabad helyek csökkentése a járaton
                 if (!flight.bookSeat()) {
                     throw new SQLException("Sikertelen foglalás: Ezen a járaton már nincsenek szabad helyek!");
                 }
@@ -131,13 +130,65 @@ public class BookingService {
                 return true;
 
             } catch (SQLException e) {
-                // Hiba esetén visszagurítjuk az egészet az eredeti állapotra
+                // Hiba esetén visszagurítjuk az egészet az eredeti állapotra!!
                 connection.rollback();
                 System.err.println("Hiba történt a foglalás mentésekor, visszavonva: " + e.getMessage());
                 e.printStackTrace();
                 return false;
             }
 
+        } catch (SQLException e) {
+            System.err.println("Adatbázis kapcsolódási hiba: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * TÖBB JEGY (KOSÁR) MENTÉSE EGYETLEN TRANZAKCIÓBAN:
+     * Ha bármelyik jegynél hiba történik (pl. elfogyott a hely), az egész kosár visszagörgetésre kerül.
+     */
+    public boolean processCartBooking(List<CartItem> cart) {
+        if (cart == null || cart.isEmpty()) {
+            return false;
+        }
+
+        try (Connection connection = Database.getConnection()) {
+            connection.setAutoCommit(false);
+
+            try {
+                // Ha több jegy ugyanarra a járatra szól, ugyanazt a Flight példányt használjuk a tranzakción belül
+                Map<String, Flight> flightCache = new HashMap<>();
+                int index = 0;
+
+                for (CartItem item : cart) {
+                    index++;
+                    Passenger passenger = item.getPassenger();
+                    Flight flight = flightCache.computeIfAbsent(
+                            item.getFlight().getFlightId(),
+                            id -> item.getFlight()
+                    );
+
+                    passengerDao.saveOrUpdatePassenger(connection, passenger);
+
+                    String ticketId = "TKT-" + System.currentTimeMillis() + "-" + index;
+                    Ticket ticket = new Ticket(ticketId, passenger, flight, item.getTravelClass(), item.getPrice());
+                    ticketDao.saveTicket(connection, ticket);
+
+                    if (!flight.bookSeat()) {
+                        throw new SQLException("Sikertelen foglalás: A(z) " + flight.getFlightId() + " járaton elfogytak a szabad helyek!");
+                    }
+                    flightDao.updateSeats(connection, flight);
+                }
+
+                connection.commit();
+                return true;
+            } catch (SQLException e) {
+                connection.rollback();
+                System.err.println("Hiba történt a kosár mentésekor, minden visszavonva: " + e.getMessage());
+                e.printStackTrace();
+                return false;
+            }
         } catch (SQLException e) {
             System.err.println("Adatbázis kapcsolódási hiba: " + e.getMessage());
             e.printStackTrace();

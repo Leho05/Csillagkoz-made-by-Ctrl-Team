@@ -20,16 +20,13 @@
         </font>
     </Label>
 
-    <Label text="Jelentkezzen be, vagy folytassa vendégként a jegyfoglalást." />
+    <Label fx:id="subtitleLabel" text="Válasszon belépési módot, vagy folytassa vendégként a jegyfoglalást." />
 
-    <VBox alignment="CENTER" maxWidth="300.0" spacing="10.0">
-        <TextField fx:id="usernameField" promptText="Felhasználónév (pl. admin vagy utas)" />
-        <PasswordField fx:id="passwordField" promptText="Jelszó (pl. admin123)" />
-
-        <Label fx:id="errorLabel" textFill="RED" visible="false" wrapText="true" />
-
-        <Button onAction="#handleLogin" maxWidth="Infinity" text="Bejelentkezés" style="-fx-font-weight: bold;" />
-        <Button onAction="#handleRegister" maxWidth="Infinity" text="Regisztráció (Új fiók)" />
+    <!-- 1. Lépés: Belépési mód választása -->
+    <VBox fx:id="choiceBox" alignment="CENTER" maxWidth="300.0" spacing="10.0">
+        <Button onAction="#showUserLogin" maxWidth="Infinity" text="Bejelentkezés" style="-fx-font-weight: bold;" />
+        <Button onAction="#showAdminLogin" maxWidth="Infinity" text="Bejelentkezés adminként" style="-fx-background-color: #d9534f; -fx-text-fill: white; -fx-font-weight: bold;" />
+        <Button onAction="#showRegister" maxWidth="Infinity" text="Regisztráció (Új fiók)" />
 
         <Separator prefWidth="200.0">
             <VBox.margin>
@@ -38,5 +35,22 @@
         </Separator>
 
         <Button onAction="#handleGuestContinue" maxWidth="Infinity" text="Folytatás bejelentkezés nélkül (Vendég)" />
+    </VBox>
+
+    <!-- 2. Lépés: Bejelentkezési / Regisztrációs űrlap -->
+    <VBox fx:id="credentialsBox" alignment="CENTER" maxWidth="300.0" spacing="10.0" visible="false" managed="false">
+        <Label fx:id="modeTitleLabel" text="Bejelentkezés">
+            <font>
+                <Font name="System Bold" size="16.0" />
+            </font>
+        </Label>
+
+        <TextField fx:id="usernameField" promptText="Felhasználónév" />
+        <PasswordField fx:id="passwordField" promptText="Jelszó" />
+
+        <Label fx:id="errorLabel" textFill="RED" visible="false" managed="false" wrapText="true" />
+
+        <Button fx:id="submitButton" onAction="#handleSubmit" maxWidth="Infinity" text="Belépés" style="-fx-font-weight: bold;" />
+        <Button onAction="#handleBackToChoices" maxWidth="Infinity" text="⬅ Vissza" />
     </VBox>
 </VBox>
