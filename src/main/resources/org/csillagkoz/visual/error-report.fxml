@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox spacing="12.0" prefWidth="480.0" prefHeight="300.0"
@@ -15,4 +16,9 @@
     <Label text="Hiba!" style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
 
     <Label text="Kérem írja le részletesen milyen hibába ütközött:" wrapText="true"/>
+
+    <TextArea fx:id="errorDescriptionArea"
+              promptText="Írja le a hiba lépéseit és a tapasztalt jelenséget..."
+              wrapText="true"
+              VBox.vgrow="ALWAYS"/>
 </VBox>
