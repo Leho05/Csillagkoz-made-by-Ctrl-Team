@@ -13,4 +13,6 @@
     </padding>
 
     <Label text="Hiba!" style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
+
+    <Label text="Kérem írja le részletesen milyen hibába ütközött:" wrapText="true"/>
 </VBox>
