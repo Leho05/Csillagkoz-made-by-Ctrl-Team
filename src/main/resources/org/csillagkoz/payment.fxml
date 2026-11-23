@@ -7,52 +7,73 @@
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" spacing="15.0" prefHeight="600.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.csillagkoz.controller.PaymentController">
-    <padding>
-        <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
-    </padding>
+<StackPane prefHeight="600.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.csillagkoz.controller.PaymentController">
+    <VBox alignment="CENTER" spacing="15.0">
+        <padding>
+            <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
+        </padding>
 
-    <Label text="Galaktikus Fizetési Terminál">
-        <font>
-            <Font name="System Bold" size="24.0" />
-        </font>
-    </Label>
+        <Label text="Galaktikus Fizetési Terminál">
+            <font>
+                <Font name="System Bold" size="24.0" />
+            </font>
+        </Label>
 
-    <!-- Kosár tételeinek megjelenítése (csak ha van jegy a kosárban) -->
-    <VBox fx:id="cartSection" alignment="CENTER_LEFT" maxWidth="480.0" spacing="8.0" visible="false" managed="false">
-        <Label text="Kosár tartalma:" style="-fx-font-weight: bold;" />
-        <ListView fx:id="cartListView" prefHeight="120.0" />
-        <Button onAction="#handleRemoveSelected" text="Kijelölt jegy törlése" />
+        <!-- Kosár tételeinek megjelenítése (csak ha van jegy a kosárban) -->
+        <VBox fx:id="cartSection" alignment="CENTER_LEFT" maxWidth="480.0" spacing="8.0" visible="false" managed="false">
+            <Label text="Kosár tartalma:" style="-fx-font-weight: bold;" />
+            <ListView fx:id="cartListView" prefHeight="120.0" />
+            <Button onAction="#handleRemoveSelected" text="Kijelölt jegy törlése" />
+        </VBox>
+
+        <Label fx:id="amountLabel" text="Fizetendő összeg: 0 Ft" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+
+        <VBox alignment="CENTER_LEFT" maxWidth="320.0" spacing="10.0">
+            <Label text="Kártyabirtokos neve:" />
+            <TextField fx:id="cardHolderField" promptText="Pl. Gipsz Jakab" />
+
+            <Label text="Bankkártyaszám (16 számjegy):" />
+            <TextField fx:id="cardNumberField" promptText="1234567812345678" />
+
+            <HBox spacing="10.0">
+                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                    <Label text="Lejárat (HH/ÉÉ):" />
+                    <TextField fx:id="expiryField" promptText="12/28" />
+                </VBox>
+                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                    <Label text="CVC kód (3 jegyű):" />
+                    <PasswordField fx:id="cvcField" promptText="123" />
+                </VBox>
+            </HBox>
+
+            <Label fx:id="errorLabel" textFill="RED" visible="false" wrapText="true" />
+
+            <HBox spacing="10.0" alignment="CENTER" style="-fx-padding: 15 0 0 0;">
+                <Button onAction="#handleCancel" text="Mégse" prefWidth="120.0" />
+                <Button onAction="#handlePayment" text="Fizetés és Foglalás" style="-fx-font-weight: bold;" prefWidth="180.0" />
+            </HBox>
+        </VBox>
     </VBox>
 
-    <Label fx:id="amountLabel" text="Fizetendő összeg: 0 Ft" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
-
-    <VBox alignment="CENTER_LEFT" maxWidth="320.0" spacing="10.0">
-        <Label text="Kártyabirtokos neve:" />
-        <TextField fx:id="cardHolderField" promptText="Pl. Gipsz Jakab" />
-
-        <Label text="Bankkártyaszám (16 számjegy):" />
-        <TextField fx:id="cardNumberField" promptText="1234567812345678" />
-
-        <HBox spacing="10.0">
-            <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                <Label text="Lejárat (HH/ÉÉ):" />
-                <TextField fx:id="expiryField" promptText="12/28" />
-            </VBox>
-            <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                <Label text="CVC kód (3 jegyű):" />
-                <PasswordField fx:id="cvcField" promptText="123" />
-            </VBox>
-        </HBox>
-
-        <Label fx:id="errorLabel" textFill="RED" visible="false" wrapText="true" />
-
-        <HBox spacing="10.0" alignment="CENTER" style="-fx-padding: 15 0 0 0;">
-            <Button onAction="#handleCancel" text="Mégse" prefWidth="120.0" />
-            <Button onAction="#handlePayment" text="Fizetés és Foglalás" style="-fx-font-weight: bold;" prefWidth="180.0" />
-        </HBox>
-    </VBox>
-</VBox>
+    <Button fx:id="errorReportButton" onAction="#handleOpenErrorReport" pickOnBounds="true"
+            style="-fx-background-color: transparent; -fx-padding: 4; -fx-cursor: hand;"
+            StackPane.alignment="BOTTOM_RIGHT">
+        <StackPane.margin>
+            <Insets bottom="16.0" right="16.0" />
+        </StackPane.margin>
+        <graphic>
+            <StackPane prefWidth="32.0" prefHeight="30.0">
+                <SVGPath content="M 16 3 L 30 27 L 2 27 Z"
+                         fill="#ffc107" stroke="#d39e00" strokeWidth="2.5" strokeLineJoin="round" />
+                <HBox alignment="CENTER" translateY="4.0">
+                    <Label text="!" style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #212529;" />
+                </HBox>
+            </StackPane>
+        </graphic>
+    </Button>
+</StackPane>

@@ -20,6 +20,17 @@ public class TicketBookingController implements ModelAware {
     private BookingModel model;
 
     @FXML
+    private Button errorReportButton;
+
+    @FXML
+    private void handleOpenErrorReport() {
+        javafx.stage.Window owner = errorReportButton != null && errorReportButton.getScene() != null
+                ? errorReportButton.getScene().getWindow()
+                : null;
+        ErrorReportDialog.show(owner);
+    }
+
+    @FXML
     private void handleOpenAdmin() {
         try {
             App.setRoot("admin", "Csillagköz - Adminisztráció");

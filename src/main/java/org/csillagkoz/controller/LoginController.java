@@ -30,9 +30,18 @@ public class LoginController {
     @FXML private PasswordField passwordField;
     @FXML private Label errorLabel;
     @FXML private Button submitButton;
+    @FXML private Button errorReportButton;
 
     private final UserDao userDao = new UserDao();
     private AuthMode currentMode = AuthMode.USER_LOGIN;
+
+    @FXML
+    private void handleOpenErrorReport() {
+        javafx.stage.Window owner = errorReportButton != null && errorReportButton.getScene() != null
+                ? errorReportButton.getScene().getWindow()
+                : null;
+        ErrorReportDialog.show(owner);
+    }
 
     @FXML
     private void showUserLogin() {

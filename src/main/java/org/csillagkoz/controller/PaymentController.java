@@ -2,6 +2,7 @@ package org.csillagkoz.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
@@ -29,6 +30,7 @@ public class PaymentController implements ModelAware {
     private final FlightDao flightDao = new FlightDao();
     private final BookingService bookingService = new BookingService();
 
+    @FXML private Button errorReportButton;
     @FXML private VBox cartSection;
     @FXML private ListView<CartItem> cartListView;
     @FXML private Label amountLabel;
@@ -40,6 +42,14 @@ public class PaymentController implements ModelAware {
 
     // Statikus segédváltozó az ár megjelenítéséhez
     public static double currentAmountToPay = 0;
+
+    @FXML
+    private void handleOpenErrorReport() {
+        javafx.stage.Window owner = errorReportButton != null && errorReportButton.getScene() != null
+                ? errorReportButton.getScene().getWindow()
+                : null;
+        ErrorReportDialog.show(owner);
+    }
 
     @Override
     public void setModel(BookingModel model) {

@@ -12,7 +12,6 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 import org.csillagkoz.App;
 import org.csillagkoz.database.FlightDao;
 import org.csillagkoz.database.UserDao;
@@ -39,6 +38,17 @@ public class PersonalDataController implements ModelAware {
     private final FlightDao flightDao = new FlightDao();
     private final BookingService bookingService = new BookingService();
     private final UserDao userDao = new UserDao();
+
+    @FXML
+    private Button errorReportButton;
+
+    @FXML
+    private void handleOpenErrorReport() {
+        javafx.stage.Window owner = errorReportButton != null && errorReportButton.getScene() != null
+                ? errorReportButton.getScene().getWindow()
+                : null;
+        ErrorReportDialog.show(owner);
+    }
 
     @Override
     public void setModel(BookingModel model) {
@@ -490,7 +500,7 @@ public class PersonalDataController implements ModelAware {
             });
         }
 
-        
+
         Platform.runLater(() -> {
             if (lastNameField != null && lastNameField.isFocused()
                     && (lastNameField.getText() == null || lastNameField.getText().trim().isEmpty())) {

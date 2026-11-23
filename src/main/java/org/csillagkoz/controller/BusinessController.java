@@ -1,6 +1,7 @@
 package org.csillagkoz.controller;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import org.csillagkoz.App;
 import org.csillagkoz.model.BookingModel;
 
@@ -9,9 +10,20 @@ import java.io.IOException;
 public class BusinessController implements ModelAware {
     private BookingModel model;
 
+    @FXML
+    private Button errorReportButton;
+
     @Override
     public void setModel(BookingModel model) {
         this.model = model;
+    }
+
+    @FXML
+    private void handleOpenErrorReport() {
+        javafx.stage.Window owner = errorReportButton != null && errorReportButton.getScene() != null
+                ? errorReportButton.getScene().getWindow()
+                : null;
+        ErrorReportDialog.show(owner);
     }
 
     @FXML

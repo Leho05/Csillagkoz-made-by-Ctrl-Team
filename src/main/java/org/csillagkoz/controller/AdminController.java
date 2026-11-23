@@ -1,6 +1,7 @@
 package org.csillagkoz.controller;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import org.csillagkoz.App;
@@ -14,12 +15,21 @@ import java.util.List;
 
 public class AdminController {
 
+    @FXML private Button errorReportButton;
     @FXML private ListView<String> bookingsListView;
     @FXML private ListView<String> flightsListView;
     @FXML private Label statsLabel;
 
     private final TicketDao ticketDao = new TicketDao();
     private final FlightDao flightDao = new FlightDao();
+
+    @FXML
+    private void handleOpenErrorReport() {
+        javafx.stage.Window owner = errorReportButton != null && errorReportButton.getScene() != null
+                ? errorReportButton.getScene().getWindow()
+                : null;
+        ErrorReportDialog.show(owner);
+    }
 
     @FXML
     public void initialize() {

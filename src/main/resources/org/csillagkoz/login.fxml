@@ -6,51 +6,73 @@
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" spacing="15.0" prefHeight="600.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.csillagkoz.controller.LoginController">
-    <padding>
-        <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
-    </padding>
+<StackPane prefHeight="600.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.csillagkoz.controller.LoginController">
+    <VBox alignment="CENTER" spacing="15.0">
+        <padding>
+            <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
+        </padding>
 
-    <Label text="Üdvözöljük a Csillagköz Rendszerében!">
-        <font>
-            <Font name="System Bold" size="24.0" />
-        </font>
-    </Label>
-
-    <Label fx:id="subtitleLabel" text="Válasszon belépési módot, vagy folytassa vendégként a jegyfoglalást." />
-
-    <!-- 1. Lépés: Belépési mód választása -->
-    <VBox fx:id="choiceBox" alignment="CENTER" maxWidth="300.0" spacing="10.0">
-        <Button onAction="#showUserLogin" maxWidth="Infinity" text="Bejelentkezés" style="-fx-font-weight: bold;" />
-        <Button onAction="#showAdminLogin" maxWidth="Infinity" text="Bejelentkezés adminként" style="-fx-background-color: #d9534f; -fx-text-fill: white; -fx-font-weight: bold;" />
-        <Button onAction="#showRegister" maxWidth="Infinity" text="Regisztráció (Új fiók)" />
-
-        <Separator prefWidth="200.0">
-            <VBox.margin>
-                <Insets bottom="10.0" top="10.0" />
-            </VBox.margin>
-        </Separator>
-
-        <Button onAction="#handleGuestContinue" maxWidth="Infinity" text="Folytatás bejelentkezés nélkül (Vendég)" />
-    </VBox>
-
-    <!-- 2. Lépés: Bejelentkezési / Regisztrációs űrlap -->
-    <VBox fx:id="credentialsBox" alignment="CENTER" maxWidth="300.0" spacing="10.0" visible="false" managed="false">
-        <Label fx:id="modeTitleLabel" text="Bejelentkezés">
+        <Label text="Üdvözöljük a Csillagköz Rendszerében!">
             <font>
-                <Font name="System Bold" size="16.0" />
+                <Font name="System Bold" size="24.0" />
             </font>
         </Label>
 
-        <TextField fx:id="usernameField" promptText="Felhasználónév" />
-        <PasswordField fx:id="passwordField" promptText="Jelszó" />
+        <Label fx:id="subtitleLabel" text="Válasszon belépési módot, vagy folytassa vendégként a jegyfoglalást." />
 
-        <Label fx:id="errorLabel" textFill="RED" visible="false" managed="false" wrapText="true" />
+        <!-- 1. Lépés: Belépési mód választása -->
+        <VBox fx:id="choiceBox" alignment="CENTER" maxWidth="300.0" spacing="10.0">
+            <Button onAction="#showUserLogin" maxWidth="Infinity" text="Bejelentkezés" style="-fx-font-weight: bold;" />
+            <Button onAction="#showAdminLogin" maxWidth="Infinity" text="Bejelentkezés adminként" style="-fx-background-color: #d9534f; -fx-text-fill: white; -fx-font-weight: bold;" />
+            <Button onAction="#showRegister" maxWidth="Infinity" text="Regisztráció (Új fiók)" />
 
-        <Button fx:id="submitButton" onAction="#handleSubmit" maxWidth="Infinity" text="Belépés" style="-fx-font-weight: bold;" />
-        <Button onAction="#handleBackToChoices" maxWidth="Infinity" text="⬅ Vissza" />
+            <Separator prefWidth="200.0">
+                <VBox.margin>
+                    <Insets bottom="10.0" top="10.0" />
+                </VBox.margin>
+            </Separator>
+
+            <Button onAction="#handleGuestContinue" maxWidth="Infinity" text="Folytatás bejelentkezés nélkül (Vendég)" />
+        </VBox>
+
+        <!-- 2. Lépés: Bejelentkezési / Regisztrációs űrlap -->
+        <VBox fx:id="credentialsBox" alignment="CENTER" maxWidth="300.0" spacing="10.0" visible="false" managed="false">
+            <Label fx:id="modeTitleLabel" text="Bejelentkezés">
+                <font>
+                    <Font name="System Bold" size="16.0" />
+                </font>
+            </Label>
+
+            <TextField fx:id="usernameField" promptText="Felhasználónév" />
+            <PasswordField fx:id="passwordField" promptText="Jelszó" />
+
+            <Label fx:id="errorLabel" textFill="RED" visible="false" managed="false" wrapText="true" />
+
+            <Button fx:id="submitButton" onAction="#handleSubmit" maxWidth="Infinity" text="Belépés" style="-fx-font-weight: bold;" />
+            <Button onAction="#handleBackToChoices" maxWidth="Infinity" text="⬅ Vissza" />
+        </VBox>
     </VBox>
-</VBox>
+
+    <Button fx:id="errorReportButton" onAction="#handleOpenErrorReport" pickOnBounds="true"
+            style="-fx-background-color: transparent; -fx-padding: 4; -fx-cursor: hand;"
+            StackPane.alignment="BOTTOM_RIGHT">
+        <StackPane.margin>
+            <Insets bottom="16.0" right="16.0" />
+        </StackPane.margin>
+        <graphic>
+            <StackPane prefWidth="32.0" prefHeight="30.0">
+                <SVGPath content="M 16 3 L 30 27 L 2 27 Z"
+                         fill="#ffc107" stroke="#d39e00" strokeWidth="2.5" strokeLineJoin="round" />
+                <HBox alignment="CENTER" translateY="4.0">
+                    <Label text="!" style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #212529;" />
+                </HBox>
+            </StackPane>
+        </graphic>
+    </Button>
+</StackPane>
