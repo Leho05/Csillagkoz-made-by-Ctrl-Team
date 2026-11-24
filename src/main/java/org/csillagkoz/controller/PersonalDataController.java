@@ -6,6 +6,7 @@ import javafx.geometry.Side;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
@@ -83,6 +84,8 @@ public class PersonalDataController implements ModelAware {
     private Label firstNameErrorLabel;
 
     @FXML
+    private ComboBox<Integer> birthYearComboBox;
+    @FXML
     private DatePicker birthDatePicker;
     @FXML
     private Label birthDateErrorLabel;
@@ -109,15 +112,46 @@ public class PersonalDataController implements ModelAware {
 
     @FXML
     private void initialize() {
-        // Jövőbeni dátumok letiltása a naptárban (csak a mai nap és a múlt engedélyezett)
+        // Születési év legördülő lista feltöltése (aktuális évtől 1920-ig)
+        if (birthYearComboBox != null) {
+            int currentYear = LocalDate.now().getYear();
+            for (int y = currentYear; y >= 1920; y--) {
+                birthYearComboBox.getItems().add(y);
+            }
+            birthYearComboBox.valueProperty().addListener((obs, oldYear, newYear) -> {
+                if (newYear != null && birthDatePicker != null) {
+                    LocalDate current = birthDatePicker.getValue();
+                    int month = (current != null) ? current.getMonthValue() : 1;
+                    int day = (current != null) ? Math.min(current.getDayOfMonth(), LocalDate.of(newYear, month, 1).lengthOfMonth()) : 1;
+                    LocalDate updated = LocalDate.of(newYear, month, day);
+                    if (!updated.equals(current)) {
+                        birthDatePicker.setValue(updated);
+                    }
+                }
+            });
+        }
+
+        // Jövőbeni dátumok letiltása a naptárban + év szinkronizálása
         if (birthDatePicker != null) {
+            birthDatePicker.valueProperty().addListener((obs, oldDate, newDate) -> {
+                if (newDate != null && birthYearComboBox != null && !Integer.valueOf(newDate.getYear()).equals(birthYearComboBox.getValue())) {
+                    birthYearComboBox.setValue(newDate.getYear());
+                }
+            });
+
             birthDatePicker.setDayCellFactory(picker -> new DateCell() {
                 @Override
                 public void updateItem(LocalDate date, boolean empty) {
                     super.updateItem(date, empty);
-                    if (date.isAfter(LocalDate.now())) {
+                    if (empty || date == null) {
+                        setDisable(false);
+                        setStyle("");
+                    } else if (date.isAfter(LocalDate.now())) {
                         setDisable(true);
-                        setStyle("-fx-background-color: #ffcccc;"); // Opcionálisan halvány pirosas hátteret is kaphatnak
+                        setStyle("-fx-background-color: #ffcccc;");
+                    } else {
+                        setDisable(false);
+                        setStyle("");
                     }
                 }
             });
@@ -245,7 +279,7 @@ public class PersonalDataController implements ModelAware {
             String travelClass = model.getSelectedClass() != null ? model.getSelectedClass() : "ECONOMY";
             double price = calculateFinalPrice();
 
-            model.addToCart(new CartItem(flight, passenger, travelClass, price));
+            model.addToCart(new CartItem(flight, passenger, travelClass, model.getSelectedSeat(), price));
             model.clearCurrentBooking();
 
             App.setRoot("ticket-booking", "Csillagköz - Jegyfoglalás");

@@ -7,6 +7,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.SVGPath?>
+<?import javafx.scene.layout.GridPane?>
 
 <StackPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="org.csillagkoz.controller.BusinessController">
@@ -15,8 +16,9 @@
             <Label text="BUSINESS OSZTÁLY" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
             <Label text="Kényelmesebb, tágasabb székek és extra szolgáltatások." style="-fx-text-fill: #666666;"/>
 
-            <!-- Itt lesz majd a business székek elhelyezkedése -->
-            <Label text="[ Ide jönnek a business székek gombjai ]" style="-fx-padding: 40px;"/>
+            <GridPane fx:id="seatGrid" hgap="8.0" vgap="8.0" alignment="CENTER"/>
+            <Label fx:id="selectedSeatLabel" text="Kiválasztott szék: nincs" style="-fx-font-weight: bold;"/>
+            <Label fx:id="errorLabel" text="Kérjük, válasszon egy széket!" style="-fx-text-fill: #ff4d4d;" visible="false" managed="false"/>
 
             <HBox alignment="CENTER" spacing="20.0">
                 <children>

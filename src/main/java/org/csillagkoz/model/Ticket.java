@@ -12,38 +12,51 @@ public class Ticket {
     private String travelClass;      // Választott osztály (ECONOMY, BUSINESS, FIRST_CLASS)
     private double finalPrice;       // Végső kiszámított ár (kedvezményekkel)
     private LocalDateTime bookingDate;// Vásárlás/Foglalás dátuma
+    private String seatNumber;
 
-    public Ticket(String ticketId, Passenger passenger, Flight flight, String travelClass, double finalPrice) {
+    public Ticket(String ticketId, Passenger passenger, Flight flight, String travelClass, double finalPrice, String seatNumber) {
         this.ticketId = ticketId;
         this.passenger = passenger;
         this.flight = flight;
         this.travelClass = travelClass;
         this.finalPrice = finalPrice;
         this.bookingDate = LocalDateTime.now();
+        this.seatNumber = seatNumber;
     }
 
     public String getTicketId() {
+
         return ticketId;
     }
 
     public Passenger getPassenger() {
+
         return passenger;
     }
 
     public Flight getFlight() {
+
         return flight;
     }
 
     public String getTravelClass() {
+
         return travelClass;
     }
 
     public double getFinalPrice() {
+
         return finalPrice;
     }
 
     public LocalDateTime getBookingDate() {
+
         return bookingDate;
+    }
+
+    public String getSeatNumber() {
+
+        return seatNumber;
     }
 
     @Override

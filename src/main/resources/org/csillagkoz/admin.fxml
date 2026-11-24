@@ -26,14 +26,18 @@
         </HBox>
 
         <Label text="Rögzített jegyfoglalások:" style="-fx-font-weight: bold;" />
-        <ListView fx:id="bookingsListView" prefHeight="220.0" />
+        <ListView fx:id="bookingsListView" prefHeight="140.0" />
 
         <Label text="Járatok állapota és szabad helyek:" style="-fx-font-weight: bold;" />
-        <ListView fx:id="flightsListView" prefHeight="180.0" />
+        <ListView fx:id="flightsListView" prefHeight="120.0" />
+
+        <Label text="Regisztrált felhasználói fiókok:" style="-fx-font-weight: bold;" />
+        <ListView fx:id="usersListView" prefHeight="110.0" />
 
         <HBox spacing="15.0" alignment="CENTER_LEFT">
             <Button onAction="#handleBack" text="⬅ Vissza a főoldalra" prefWidth="160.0" />
             <Button onAction="#handleRefresh" text="Adatok frissítése" prefWidth="150.0" />
+            <Button fx:id="deleteButton" onAction="#handleDeleteSelected" text="Kijelölt elem törlése" prefWidth="180.0" style="-fx-background-color: #d9534f; -fx-text-fill: white; -fx-font-weight: bold;" />
         </HBox>
     </VBox>
 

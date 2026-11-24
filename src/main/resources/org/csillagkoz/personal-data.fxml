@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
@@ -33,7 +34,10 @@
                 <Label text="Születési dátum:"/>
                 <Label fx:id="birthDateErrorLabel" text="" style="-fx-text-fill: #ff4d4d; -fx-font-size: 11px;" visible="false"/>
             </HBox>
-            <DatePicker fx:id="birthDatePicker" promptText="ÉÉÉÉ. HH. NN." prefWidth="300.0"/>
+            <HBox spacing="8.0" alignment="CENTER_LEFT" maxWidth="300.0">
+                <ComboBox fx:id="birthYearComboBox" promptText="Év" prefWidth="95.0"/>
+                <DatePicker fx:id="birthDatePicker" promptText="ÉÉÉÉ. HH. NN." prefWidth="197.0" editable="true"/>
+            </HBox>
 
             <HBox spacing="10.0" alignment="CENTER_LEFT" maxWidth="300.0">
                 <Label text="Okmány típusa:"/>

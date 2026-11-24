@@ -43,6 +43,7 @@ public class Database {
                 + "travel_class TEXT NOT NULL, "
                 + "final_price REAL NOT NULL, "
                 + "booking_date TEXT NOT NULL, "
+                + "seat_number TEXT, "
                 + "FOREIGN KEY (flight_id) REFERENCES flights(flight_id), "
                 + "FOREIGN KEY (galactic_id) REFERENCES passengers(galactic_id)"
                 + ");";

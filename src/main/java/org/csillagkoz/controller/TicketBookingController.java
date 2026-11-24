@@ -397,6 +397,7 @@ public class TicketBookingController implements ModelAware {
             if (destinationComboBox != null) model.setDestination(destinationComboBox.getValue());
             if (flightDatePicker != null) model.setFlightDate(flightDatePicker.getValue());
             if (passengerTypeComboBox != null) model.setPassengerType(passengerTypeComboBox.getValue());
+            model.setSelectedSeat(null);
         }
 
         if (economyRadioButton != null && economyRadioButton.isSelected()) {

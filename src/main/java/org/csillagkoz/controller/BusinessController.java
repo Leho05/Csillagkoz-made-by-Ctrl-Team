@@ -2,6 +2,8 @@ package org.csillagkoz.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
 import org.csillagkoz.App;
 import org.csillagkoz.model.BookingModel;
 
@@ -10,13 +12,10 @@ import java.io.IOException;
 public class BusinessController implements ModelAware {
     private BookingModel model;
 
-    @FXML
-    private Button errorReportButton;
-
-    @Override
-    public void setModel(BookingModel model) {
-        this.model = model;
-    }
+    @FXML private GridPane seatGrid;
+    @FXML private Label selectedSeatLabel;
+    @FXML private Label errorLabel;
+    @FXML private Button errorReportButton;
 
     @FXML
     private void handleOpenErrorReport() {
@@ -26,6 +25,12 @@ public class BusinessController implements ModelAware {
         ErrorReportDialog.show(owner);
     }
 
+    @Override
+    public void setModel(BookingModel model) {
+        this.model = model;
+        SeatSelectionHelper.setupSeats(seatGrid, selectedSeatLabel, errorLabel, model, "BUSINESS", 4, 3);
+    }
+
     @FXML
     private void handleBack() throws IOException {
         App.setRoot("ticket-booking", "Csillagköz - Jegyfoglalás");
@@ -33,9 +38,12 @@ public class BusinessController implements ModelAware {
 
     @FXML
     private void handleNext() throws IOException {
-        if (model != null) {
-            model.setPreviousView("business-seats");
+        if (model == null || model.getSelectedSeat() == null) {
+            errorLabel.setVisible(true);
+            errorLabel.setManaged(true);
+            return;
         }
+        model.setPreviousView("business-seats");
         App.setRoot("personal-data", "Csillagköz - Személyes adatok");
     }
 }

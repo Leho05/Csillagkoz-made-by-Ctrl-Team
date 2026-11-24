@@ -199,7 +199,7 @@ public class PaymentController implements ModelAware {
         Passenger passenger = new Passenger(fullName, model.getPassportNumber(), age);
         String ticketId = "TKT-" + System.currentTimeMillis();
         String travelClass = model.getSelectedClass() != null ? model.getSelectedClass() : "ECONOMY";
-        Ticket ticket = new Ticket(ticketId, passenger, flight, travelClass, currentAmountToPay);
+        Ticket ticket = new Ticket(ticketId, passenger, flight, travelClass, currentAmountToPay, model.getSelectedSeat());
 
         if (!bookingService.processBooking(passenger, ticket, flight, 0)) {
             showError("Nem sikerült rögzíteni a foglalást az adatbázisban!");

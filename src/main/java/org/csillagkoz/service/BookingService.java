@@ -172,7 +172,7 @@ public class BookingService {
                     passengerDao.saveOrUpdatePassenger(connection, passenger);
 
                     String ticketId = "TKT-" + System.currentTimeMillis() + "-" + index;
-                    Ticket ticket = new Ticket(ticketId, passenger, flight, item.getTravelClass(), item.getPrice());
+                    Ticket ticket = new Ticket(ticketId, passenger, flight, item.getTravelClass(), item.getPrice(), item.getSeatNumber());
                     ticketDao.saveTicket(connection, ticket);
 
                     if (!flight.bookSeat()) {

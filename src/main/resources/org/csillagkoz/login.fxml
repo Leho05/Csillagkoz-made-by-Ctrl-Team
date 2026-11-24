@@ -49,8 +49,8 @@
                 </font>
             </Label>
 
-            <TextField fx:id="usernameField" promptText="Felhasználónév" />
-            <PasswordField fx:id="passwordField" promptText="Jelszó" />
+            <TextField fx:id="usernameField" onAction="#handleSubmit" promptText="Felhasználónév" />
+            <PasswordField fx:id="passwordField" onAction="#handleSubmit" promptText="Jelszó" />
 
             <Label fx:id="errorLabel" textFill="RED" visible="false" managed="false" wrapText="true" />
 

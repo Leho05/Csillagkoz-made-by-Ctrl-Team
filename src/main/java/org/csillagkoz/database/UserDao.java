@@ -2,6 +2,8 @@ package org.csillagkoz.database;
 
 import org.csillagkoz.model.User;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserDao {
 
@@ -65,6 +67,30 @@ public class UserDao {
             pstmt.setString(7, user.getPhone());
             pstmt.setString(8, user.getUsername());
             pstmt.executeUpdate();
+        }
+    }
+
+    // Összes felhasználó lekérése (admin felülethez)
+    public List<User> getAllUsers() throws SQLException {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT username, role FROM users ORDER BY username;";
+        try (Connection conn = Database.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                users.add(new User(rs.getString("username"), "", rs.getString("role")));
+            }
+        }
+        return users;
+    }
+
+    // Felhasználói fiók törlése felhasználónév alapján
+    public boolean deleteUser(String username) throws SQLException {
+        String sql = "DELETE FROM users WHERE username = ?;";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, username);
+            return pstmt.executeUpdate() > 0;
         }
     }
 }

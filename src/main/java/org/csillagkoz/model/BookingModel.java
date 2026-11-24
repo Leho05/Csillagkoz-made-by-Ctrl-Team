@@ -13,6 +13,7 @@ public class BookingModel {
     private LocalDate flightDate;
     private String passengerType;
     private String selectedClass; // ECONOMY, BUSINESS, FIRST_CLASS
+    private String selectedSeat;
 
     // Személyes adatok
     private String lastName;
@@ -55,6 +56,7 @@ public class BookingModel {
         this.flightDate = null;
         this.passengerType = null;
         this.selectedClass = null;
+        this.selectedSeat = null;
 
         this.lastName = null;
         this.firstName = null;
@@ -158,4 +160,8 @@ public class BookingModel {
     public void setPhone(String phone) {
         this.phone = phone;
     }
+
+    public String getSelectedSeat() { return selectedSeat; }
+
+    public void setSelectedSeat(String selectedSeat) { this.selectedSeat = selectedSeat; }
 }

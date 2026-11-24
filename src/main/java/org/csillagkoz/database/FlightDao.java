@@ -79,4 +79,32 @@ public class FlightDao {
             pstmt.executeUpdate();
         }
     }
+
+    // Járat és a hozzá tartozó jegyek törlése tranzakcióban
+    public boolean deleteFlight(String flightId) throws SQLException {
+        String deleteTicketsSql = "DELETE FROM tickets WHERE flight_id = ?;";
+        String deleteFlightSql = "DELETE FROM flights WHERE flight_id = ?;";
+
+        try (Connection conn = Database.getConnection()) {
+            conn.setAutoCommit(false);
+            try {
+                try (PreparedStatement delTickets = conn.prepareStatement(deleteTicketsSql)) {
+                    delTickets.setString(1, flightId);
+                    delTickets.executeUpdate();
+                }
+
+                int deleted;
+                try (PreparedStatement delFlight = conn.prepareStatement(deleteFlightSql)) {
+                    delFlight.setString(1, flightId);
+                    deleted = delFlight.executeUpdate();
+                }
+
+                conn.commit();
+                return deleted > 0;
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            }
+        }
+    }
 }
