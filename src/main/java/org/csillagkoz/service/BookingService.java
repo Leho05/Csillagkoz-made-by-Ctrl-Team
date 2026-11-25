@@ -36,7 +36,6 @@ public class BookingService {
         }
         int age = Period.between(birthDate, LocalDate.now()).getYears();
 
-        // 18 év alatt van-e (és nem jövőbeli dátum)
         return age >= 0 && age < 18;
     }
 
@@ -130,7 +129,7 @@ public class BookingService {
                 return true;
 
             } catch (SQLException e) {
-                // Hiba esetén visszagurítjuk az egészet az eredeti állapotra!!
+                // Hiba esetén vissza az egészet az eredeti állapotra!!
                 connection.rollback();
                 System.err.println("Hiba történt a foglalás mentésekor, visszavonva: " + e.getMessage());
                 e.printStackTrace();
@@ -146,7 +145,7 @@ public class BookingService {
 
     /**
      * TÖBB JEGY (KOSÁR) MENTÉSE EGYETLEN TRANZAKCIÓBAN:
-     * Ha bármelyik jegynél hiba történik (pl. elfogyott a hely), az egész kosár visszagörgetésre kerül.
+
      */
     public boolean processCartBooking(List<CartItem> cart) {
         if (cart == null || cart.isEmpty()) {
@@ -157,7 +156,7 @@ public class BookingService {
             connection.setAutoCommit(false);
 
             try {
-                // Ha több jegy ugyanarra a járatra szól, ugyanazt a Flight példányt használjuk a tranzakción belül
+
                 Map<String, Flight> flightCache = new HashMap<>();
                 int index = 0;
 

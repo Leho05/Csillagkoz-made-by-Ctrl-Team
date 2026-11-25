@@ -6,18 +6,16 @@ Egy asztali JavaFX alkalmazás, amely intergalaktikus űrutazások jegyfoglalás
 
 ## Főbb funkciók
 
-- **Felhasználó- és jogosultságkezelés**: Kétlépcsős bejelentkezés (felhasználói belépés, adminisztrátori belépés, regisztráció, vendég mód) `USER` és `ADMIN` szerepkörökkel, munkamenet-kezeléssel (`SessionManager`), valamint mentett személyes adatok automatikus kitöltésével és profilba mentésével.
+- **Felhasználó- és jogosultságkezelés**: Kétlépcsős bejelentkezés (felhasználói belépés, adminisztrátori belépés, regisztráció, vendég mód) `USER` és `ADMIN` szerepkörökkel, munkamenet-kezeléssel, valamint mentett személyes adatok automatikus kitöltésével és profilba mentésével.
 - **Dinamikus járatkezelés**: A célállomások (Mars, Hold, külső bolygók és holdak bázisai), alapárak és szabad helyek közvetlenül a helyi SQLite adatbázisból töltődnek be (`FlightDao.getAllFlights()`).
 - **Intelligens naptárkezelés**: A felület nem enged múltbeli dátumra foglalást indítani, a személyes adatoknál pedig tiltja a jövőbeli születési dátumokat, színezéssel jelezve a nem választható napokat.
-- **Többosztályos kabinkezelés**: Foglalási lehetőség Turista (Economy), Üzleti (Business) és Első osztályon (First Class) külön kabinoldalakkal.
+- **Többosztályos kabinkezelés és ülésválasztás**: Foglalási lehetőség Turista (Economy), Üzleti (Business) és Első osztályon (First Class) interaktív székválasztóval (`SeatSelectionHelper`), amely jelzi a szabad, kiválasztott és már lefoglalt helyeket.
 - **Kosárkezelés és több jegy vásárlása**: A személyes adatok megadása után a jegy kosárba tehető (`CartItem`), így egy menetben több jegy is összeállítható, a fizetési felületen pedig megtekinthetők és törölhetők a kosár tételei.
-- **Automatikus árkalkuláció (`BookingService`)**: A végső jegyár a kiválasztott járat adatbázisbeli alapárából, a célállomás típusából (Hold úti célok esetén 25% kedvezmény), az utastípusból (gyermek 50%, diák 20%, nyugdíjas 30% kedvezmény) és a kabinosztály-szorzóból (Business: 1.5x, First Class: 2.5x) számolódik.
-- **Személyes adatok, autofill és okmányok validációja**: Weboldalszerű lenyíló automatikus kitöltés bejelentkezett felhasználóknak, névformátum, korhatár (18+), e-mail cím, telefonszám, valamint útlevél és személyi igazolvány formai ellenőrzése.
-- **Fizetési terminál szimuláció és tranzakciós mentés**: Bankkártyás fizetési felület kártyaszám- (16 számjegy), lejárat- (`HH/ÉÉ`, nem lejárt kártya) és CVC-ellenőrzéssel (3 számjegy), amely sikeres ellenőrzés után egyetlen adatbázis-tranzakcióban (`BookingService.processBooking` / `processCartBooking` – `commit` / `rollback`) rögzíti az utasokat, a jegyeket és csökkenti a járatok szabad helyeit.
-- **Adminisztrációs központ (`AdminController`)**: Az `ADMIN` szerepkörrel belépett felhasználók megtekinthetik a rögzített jegyfoglalásokat és a járatok aktuális szabad helyeit/státuszát.
-- **Központi állapotkezelés (`BookingModel` & `ModelAware`)**: A nézetek közötti adatáramlást egy dedikált `BookingModel` entitás és a `ModelAware` interfész biztosítja a kereséstől a fizetés lezárásáig.
-- **Opcionális grafikai előnézeti mód (`VisualApp`)**: Külön indítható animált űrháttér, bolygó-, kabin- és űrlény-illusztrációk, valamint élő űrjegy-előnézet az eredeti vezérlők módosítása nélkül (részletek: [GRAFIKAI-UTMUTATO.md](GRAFIKAI-UTMUTATO.md)).
-
+- **Automatikus árkalkuláció (`BookingService`)**: A végső jegyár elég bonyolult: a kiválasztott járat adatbázisbeli alapárából, a célállomás típusából (Hold úti célok esetén 25% kedvezmény), az utastípusból (gyermek 50%, diák 20%, nyugdíjas 30% kedvezmény) és a kabinosztály-szorzóból (Business: 1.5x, First Class: 2.5x) számolódik.
+- **Személyes adatok, autofill és okmányok validációja**: Weboldalszerű lenyíló automatikus kitöltés bejelentkezett felhasználóknak, születési év választó, névformátum, korhatár (18+), e-mail cím, telefonszám, valamint útlevél és személyi igazolvány formai ellenőrzése.
+- **Fizetési terminál szimuláció és tranzakciós mentés**: Bankkártyás fizetési felület kártyaszám- (16 számjegy), lejárat- (`HH/ÉÉ`, nem lejárt kártya) és CVC-ellenőrzéssel (3 számjegy), amely sikeres ellenőrzés után egyetlen adatbázis-tranzakcióban rögzíti az utasokat, a jegyeket és csökkenti a járatok szabad helyeit.
+- **Adminisztrációs központ (`AdminController`)**: Az `ADMIN` szerepkörrel belépett felhasználók megtekinthetik és kezelhetik a rögzített jegyfoglalásokat, járatokat és regisztrált felhasználói fiókokat (beleértve a kijelölt jegyek, járatok és fiókok törlését).
+- **Hibabejelentő (`ErrorReportDialog`)**: Minden főbb képernyőről elérhető beépített hibabejelentő ablak.
 ---
 
 ## Használt technológiák
@@ -54,9 +52,12 @@ Csillagkoz-made-by-Ctrl-Team/
     │       │   ├── EconomyController.java       # Turista osztály nézet
     │       │   ├── BusinessController.java      # Üzleti osztály nézet
     │       │   ├── FirstClassController.java    # Első osztály nézet
+    │       │   ├── SeatSelectionHelper.java     # Közös székválasztó rács és foglaltságkezelés
     │       │   ├── PersonalDataController.java  # Utas adatok validációja és árkalkuláció
     │       │   ├── PaymentController.java       # Fizetési felület, kártyaellenőrzés és mentés
     │       │   ├── AdminController.java         # Adminisztrációs felület vezérlője
+    │       │   ├── ErrorReportController.java   # Hibabejelentő ablak vezérlője
+    │       │   ├── ErrorReportDialog.java       # Hibabejelentő felugró ablak segédosztály
     │       │   └── ModelAware.java              # Interfész a modell megosztásához a vezérlők között
     │       ├── database/                        # Adatbázis réteg
     │       │   ├── Database.java                # Kapcsolatkezelés és inicializálás/seeding
@@ -75,7 +76,7 @@ Csillagkoz-made-by-Ctrl-Team/
     │       ├── service/                         # Üzleti logika és munkamenet
     │       │   ├── BookingService.java          # Jegyár-számítás, validáció és tranzakciós mentés
     │       │   └── SessionManager.java          # Bejelentkezett felhasználó munkamenetének kezelése
-    │       └── visual/                          # Opcionális grafikai réteg (VisualApp)
+    │       └── visual/                          # Opcionális grafikai réteg (VisualApp)!!!!
     │           ├── SpaceAssets.java
     │           ├── SpaceBackdrop.java
     │           ├── SpaceRoute.java
@@ -91,6 +92,7 @@ Csillagkoz-made-by-Ctrl-Team/
         ├── personal-data.fxml                   # Személyes adatbekérő űrlap
         ├── payment.fxml                         # Fizetési terminál nézet
         ├── admin.fxml                           # Adminisztrációs központ nézet
+        ├── error-report.fxml                    # Hibabejelentő ablak nézet
         └── visual/                              # Grafikai stíluslap, leképezés és képek
 ```
 

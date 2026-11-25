@@ -9,7 +9,7 @@ public class Destination {
     private int basePrice;
     private int kedvezmenyesPrice;
 
-    // Konstruktor (ezzel hozzuk létre az új célállomásokat)
+    // új célállomások leterehozas
     public Destination(String name, String type, int basePrice, int kedvezmenyesPrice) {
         this.name = name;
         this.type = type;

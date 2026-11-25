@@ -329,7 +329,6 @@ public class TicketBookingController implements ModelAware {
             }
             isValid = false;
         } else {
-            // Itt ne töröljük ki a stílust feltétel nélkül, ha az előbbi útvonalhiba miatt lett piros, de ha rendben van, oké
             if (destinationErrorLabel == null || !destinationErrorLabel.isVisible()) {
                 destinationComboBox.setStyle("");
             }

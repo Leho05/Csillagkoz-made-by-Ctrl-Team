@@ -15,7 +15,7 @@ public class SeatSelectionHelper {
                                   BookingModel model, String travelClass, int rows, int cols) {
         seatGrid.getChildren().clear();
 
-        // 1. Foglalt székek lekérése az adatbázisból + a jelenlegi kosárból
+        // Foglalt székek lekérése az adatbázisból + a jelenlegi kosárból
         TicketDao ticketDao = new TicketDao();
         String destination = (model != null) ? model.getDestination() : null;
         List<String> occupied = (destination != null)
@@ -36,20 +36,20 @@ public class SeatSelectionHelper {
         final Button[] currentSelectedBtn = { null };
         String preselected = (model != null) ? model.getSelectedSeat() : null;
 
-        // 2. Szék gombok legenerálása két for ciklussal
+        // Szék gombok legenerálása
         for (int r = 1; r <= rows; r++) {
             for (int c = 0; c < cols; c++) {
-                String seatCode = r + String.valueOf((char) ('A' + c)); // pl. "1A", "1B"
+                String seatCode = r + String.valueOf((char) ('A' + c));
                 Button btn = new Button(seatCode);
                 btn.setPrefWidth(55);
                 btn.setPrefHeight(36);
 
                 if (occupied.contains(seatCode)) {
-                    // Már foglalt szék: piros és nem kattintható
+                    // Már foglalt szék: piros + nem kattintható
                     btn.setDisable(true);
                     btn.setStyle("-fx-background-color: #ffcccc; -fx-text-fill: #880000;");
                 } else if (seatCode.equals(preselected)) {
-                    // Korábban már kiválasztott szék (pl. visszalépés után): kék
+                    // Korábban már kiválasztott szék: kek
                     btn.setStyle("-fx-background-color: #0056b3; -fx-text-fill: white; -fx-font-weight: bold;");
                     currentSelectedBtn[0] = btn;
                     selectedSeatLabel.setText("Kiválasztott szék: " + seatCode);
@@ -75,7 +75,6 @@ public class SeatSelectionHelper {
                     }
                 });
 
-                // Kis folyosóhézag a székek közepén: a jobb oldali oszlopokat 1-gyel eltoljuk
                 int gridCol = (c >= cols / 2) ? c + 1 : c;
                 seatGrid.add(btn, gridCol, r - 1);
             }

@@ -14,7 +14,6 @@ public class Passenger {
         this.age = age;
     }
 
-    // Getters és Setters
     public String getName() {
         return name;
     }

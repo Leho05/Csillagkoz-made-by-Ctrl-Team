@@ -5,7 +5,6 @@ public class User {
     private String password;
     private String role; // "USER" vagy "ADMIN"
 
-    // Opcionálisan elmentett személyes adatok
     private String lastName;
     private String firstName;
     private String birthDate;

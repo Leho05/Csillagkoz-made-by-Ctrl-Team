@@ -12,16 +12,15 @@ public class Flight {
     private LocalDateTime bookingDeadline; // Jegyértékesítési határidő (pl. indulás előtt 48 óra)
     private int maxCapacity;               // Max férőhely az űrhajón
     private int availableSeats;          // Aktuális szabad helyek száma
-    private String status;                 // Státusz: "TERVEZETT", "FOGLALHATÓ", "MEGTELT", "LEZÁRT"
+    private String status;                 // Státusz:"FOGLALHATÓ", "MEGTELT"
 
-    // Konstruktor
     public Flight(String flightId, Destination destination, LocalDateTime departureTime, LocalDateTime bookingDeadline, int maxCapacity) {
         this.flightId = flightId;
         this.destination = destination;
         this.departureTime = departureTime;
         this.bookingDeadline = bookingDeadline;
         this.maxCapacity = maxCapacity;
-        this.availableSeats = maxCapacity; // Kezdetben minden hely szabad
+        this.availableSeats = maxCapacity;
         this.status = "FOGLALHATÓ";
     }
 
